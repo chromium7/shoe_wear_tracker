@@ -5,7 +5,6 @@ from rest_framework.authentication import BaseAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.request import Request
 
-from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser
 from django.core.cache import cache
 
