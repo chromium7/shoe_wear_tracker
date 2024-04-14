@@ -1,0 +1,30 @@
+[project]
+name = "Shoe Wear Tracker"
+readme = "README.md"
+
+[tool.mypy]
+plugins = ["mypy_django_plugin.main"]
+strict_optional = false
+
+[[tool.mypy.overrides]]
+module = [
+  "*.migrations.*",
+  "tracker.settings"
+]
+ignore_errors = true
+
+[tool.django-stubs]
+django_settings_module = "tracker.settings"
+
+[tool.isort]
+include_trailing_comma = true
+line_length = 120
+known_django = ["django"]
+sections = [
+  "FUTURE",
+  "STDLIB",
+  "THIRDPARTY",
+  "DJANGO",
+  "FIRSTPARTY",
+  "LOCALFOLDER"
+]
