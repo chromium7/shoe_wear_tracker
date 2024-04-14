@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     # 3rd party apps
     'django_extensions',
     'rest_framework',
-    'constance',
 
     # Local apps
     'tracker.apps.activities',
@@ -158,22 +157,11 @@ CACHES = {
     }
 }
 
-# Constance
-CONSTANCE_BACKEND = 'constance.backends.redisd.RedisBackend'
-CONSTANCE_REDIS_CONNECTION = {
-    'host': 'localhost',
-    'port': 6379,
-    'db': 0,
-}
-CONSTANCE_CONFIG = {
-    'STRAVA_CLIENT_SECRET': ('', 'Strava Client Secret', str),
-    'STRAVA_ACCESS_TOKEN': ('', 'Strava Access Token', str),
-    'STRAVA_REFRESH_TOKEN': ('', 'Strava Refresh Token', str),
-}
-
-
 # REST Framework configs
 API_AUTHENTICATION_TOKEN = ''
+
+STRAVA_CLIENT_ID = ''
+STRAVA_CLIENT_SECRET = ''
 
 FIXTURE_DIRS = (
     BASE_DIR / "tests/fixtures",
