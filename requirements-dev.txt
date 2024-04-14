@@ -1,6 +1,6 @@
 django-debug-toolbar==4.3.0
 
-mypy==1.8.0
+mypy==1.9.0
 isort==5.13.2
 
 # Types
