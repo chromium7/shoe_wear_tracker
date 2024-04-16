@@ -17,6 +17,7 @@ class Shoes(models.Model):
     note = models.TextField(blank=True)
     distance_covered = models.FloatField(default=0)
     created = models.DateTimeField(default=timezone.now)
+    strava_id = models.CharField(blank=True)
     retired_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self) -> str:

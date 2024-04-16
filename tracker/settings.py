@@ -66,7 +66,9 @@ ROOT_URLCONF = 'tracker.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            BASE_DIR / 'templates'
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -133,6 +135,9 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = SETTINGS_DIR / 'static'
+STATICFILES_DIRS = (
+    BASE_DIR / 'static_files',
+)
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = SETTINGS_DIR / 'media'
@@ -159,6 +164,9 @@ CACHES = {
 
 # REST Framework configs
 API_AUTHENTICATION_TOKEN = ''
+
+LOGIN_URL = '/auth/sign-in/'
+LOGIN_REDIRECT_URL = ''
 
 STRAVA_CLIENT_ID = ''
 STRAVA_CLIENT_SECRET = ''

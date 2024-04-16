@@ -1,8 +1,15 @@
 import pathlib
 from typing import Any
 
+from django.http import HttpRequest
 from django.utils import timezone
 from django.template.defaultfilters import slugify
+
+from tracker.apps.users.models import User
+
+
+class TrackerHttpRequest(HttpRequest):
+    user: User
 
 
 class FilenameGenerator:
