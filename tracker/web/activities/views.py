@@ -13,7 +13,7 @@ def index(request: TrackerHttpRequest) -> HttpResponse:
     context = {
         'activities': activities,
     }
-    return render('web/activities/index.html', context)
+    return render(request, 'web/activities/index.html', context)
 
 
 @login_required
@@ -33,4 +33,4 @@ def details(request: TrackerHttpRequest, id: int) -> HttpResponse:
         'activity': activity,
         'photo_by_categories': photos_by_category,
     }
-    return render('web/activities/details.html', context)
+    return render(request, 'web/activities/details.html', context)

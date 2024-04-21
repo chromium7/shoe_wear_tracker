@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # 3rd party apps
+    'compressor',
     'django_extensions',
     'rest_framework',
 
@@ -138,6 +139,19 @@ STATIC_ROOT = SETTINGS_DIR / 'static'
 STATICFILES_DIRS = (
     BASE_DIR / 'static_files',
 )
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
+)
+
+COMPRESS_PARSER = 'compressor.parser.LxmlParser'
+COMPRESS_ENABLED = True
+COMPRESS_MTIME_DELAY = 20
+COMPRESS_PRECOMPILERS = (
+    ('text/x-scss', 'django_libsass.SassCompiler'),
+)
+
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = SETTINGS_DIR / 'media'
@@ -167,6 +181,7 @@ API_AUTHENTICATION_TOKEN = ''
 
 LOGIN_URL = '/auth/sign-in/'
 LOGIN_REDIRECT_URL = ''
+APPEND_SLASH = True
 
 STRAVA_CLIENT_ID = ''
 STRAVA_CLIENT_SECRET = ''

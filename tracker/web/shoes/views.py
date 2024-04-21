@@ -13,7 +13,7 @@ def index(request: TrackerHttpRequest) -> HttpResponse:
     context = {
         'shoes': shoes,
     }
-    return render('web/shoes/index.html', context)
+    return render(request, 'web/shoes/index.html', context)
 
 
 @login_required
@@ -23,4 +23,4 @@ def details(request: TrackerHttpRequest, id: int) -> HttpResponse:
     context = {
         'shoes': shoes,
     }
-    return render('web/shoes/details.html', context)
+    return render(request, 'web/shoes/details.html', context)
