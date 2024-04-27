@@ -45,4 +45,5 @@ class AuthorizationForm(forms.Form):
 
     def save(self) -> User:
         self.profile.save()
+        self.profile.user.save(update_fields=['measurement_unit'])
         return self.profile.user

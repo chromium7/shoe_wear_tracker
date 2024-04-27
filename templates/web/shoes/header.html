@@ -1,0 +1,15 @@
+<div class="right">
+    <select name="action" id="action">
+        <option value="{% url "web:shoes:index" %}">Action</option>
+        <option value="{% url "web:shoes:strava_list" %}">Add Shoes</option>
+    </select>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const actionInput = document.querySelector('#action');
+        actionInput.addEventListener('change', () => {
+            window.location.href = actionInput.value;
+        })
+    });
+</script>

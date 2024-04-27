@@ -5,4 +5,7 @@
     <h1>Shoe Wear Tracker</h1>
 </div>
 {% include "web/shoes/header.html" %}
+{% for shoe in new_shoes %}
+    {{ shoe }}
+{% endfor %}
 {% endblock %}
