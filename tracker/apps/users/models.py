@@ -33,7 +33,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     created = models.DateTimeField(default=timezone.now)
-    strava_id = models.CharField(blank=True)
     measurement_unit = ChoicesPositiveSmallIntegerField(
         choices=MeasurementUnit.choices, default=MeasurementUnit.METRIC
     )
@@ -43,3 +42,11 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self) -> str:
         return self.username
+
+
+class StravaProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='strava_profile')
+    athlete_id = models.CharField()
+    access_token = models.CharField()
+    refresh_token = models.CharField()
+    expires_at = models.IntegerField()

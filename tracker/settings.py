@@ -178,7 +178,9 @@ CACHES = {
 
 # REST Framework configs
 API_AUTHENTICATION_TOKEN = ''
+API_REQUIRES_HTTPS = True
 
+HOST_URL = '127.0.0.1'
 LOGIN_URL = '/auth/sign-in/'
 LOGIN_REDIRECT_URL = ''
 APPEND_SLASH = True

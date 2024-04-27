@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% if strava_auth_url %}
+<p class="center">
+    Please authorize this app in your strava account.
+    <br>
+    <a href="{{ strava_auth_url }}">Authorize</a>
+</p>
+{% endif %}
 <div class="center">
     <h1>Shoe Wear Tracker</h1>
 </div>

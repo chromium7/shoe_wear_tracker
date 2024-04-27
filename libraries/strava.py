@@ -1,74 +1,110 @@
-from typing import Optional, TYPE_CHECKING
+from enum import Enum
+from urllib.parse import urlencode, urljoin
+from typing import TYPE_CHECKING
 
 import httpx
 
-from django_redis import get_redis_connection
 from django.conf import settings
+from django.utils import timezone
+from django.urls import reverse
+
+from tracker.apps.users.models import User, StravaProfile
 
 if TYPE_CHECKING:
     from tracker.apps.activities.models import Activity
-    from tracker.apps.users.models import User
     from tracker.apps.shoes.models import Shoes
 
 
 TIMEOUT = 10
 BASE_URL = 'https://www.strava.com/api/v3/'
-ACCESS_TOKEN_KEY = 'strava:access-token'
-REFRESH_TOKEN_KEY = 'strava:refresh-token'
+
+class GrantType(Enum):
+    AUTHORIZATION_CODE = 'authorization_code'
+    REFRESH_TOKEN = 'refresh_token'
 
 
-def get_headers(token: Optional[str] = '') -> dict:
-    if not token:
-        token = get_access_token()
+def get_headers(user: User) -> dict:
+    token = get_access_token(user)
     return {
         'Content-Type': 'application/json',
         'Authorization': f'Bearer {token}'
     }
 
 
-def get_access_token() -> str:
-    redis = get_redis_connection()
-    access_token = redis.get(ACCESS_TOKEN_KEY)
-    if not access_token:
-        refresh_token = redis.get(REFRESH_TOKEN_KEY).decode()
-        response = refresh_access_token(refresh_token)
+def get_authorization_url(user: User) -> str:
+    query_params = {
+        'client_id': settings.STRAVA_CLIENT_ID,
+        'redirect_uri': urljoin(settings.HOST_URL, reverse('api:strava:authorized')),
+        'response_type': 'code',
+        'approval_prompt': 'auto',
+        'scope': 'read,profile:read_all,activity:read_all',
+        'state': user.id,
+    }
+    return 'https://www.strava.com/oauth/authorize?' + urlencode(query_params)
+
+
+def authorize_user(user: User, code: str, commit: bool = False) -> StravaProfile:
+    response = _get_access_token(code, GrantType.AUTHORIZATION_CODE)
+    response.raise_for_status()
+
+    data = response.json()
+    profile = getattr(user, 'strava_profile', StravaProfile(user=user))
+    profile.athlete_id = data['athlete']['id']
+    profile.access_token = data['access_token']
+    profile.refresh_token = data['refresh_token']
+    profile.expires_at = data['expires_at']
+
+    if commit:
+        profile.save()
+
+    return profile
+
+
+def get_access_token(user: User) -> str:
+    profile = user.strava_profile
+    current_ts = int(timezone.now().timestamp())
+
+    # Refresh token if it expires within 5 minutes
+    if current_ts > (profile.expires_at - 300):
+        response = _get_access_token(profile.refresh_token, GrantType.REFRESH_TOKEN)
         response.raise_for_status()
-
         data = response.json()
-        access_token = data['access_token']
-        expires_in = data['expires_in']
-        refresh_token = data['refresh_token']
-        redis.set(ACCESS_TOKEN_KEY, access_token, ex=(expires_in - 300))
-        redis.set(REFRESH_TOKEN_KEY, refresh_token)
-    else:
-        access_token = access_token.decode()
+        profile.access_token = data['access_token']
+        profile.refresh_token = data['refresh_token']
+        profile.expires_at = data['expires_at']
+        profile.save(update_fields=['access_token', 'refresh_token', 'expires_at'])
 
-    return access_token
+    return profile.access_token
 
 
-def refresh_access_token(refresh_token: str) -> httpx.Response:
+def _get_access_token(token: str, grant_type: GrantType) -> httpx.Response:
     url = 'https://www.strava.com/api/v3/oauth/token'
     data = {
         'client_id': settings.STRAVA_CLIENT_ID,
         'client_secret': settings.STRAVA_CLIENT_SECRET,
-        'refresh_token': refresh_token,
-        'grant_type': 'refresh_token',
+        'refresh_token': token,
+        'grant_type': grant_type.value,
     }
+
+    if grant_type == GrantType.REFRESH_TOKEN:
+        data['refresh_token'] = token
+    elif grant_type == GrantType.AUTHORIZATION_CODE:
+        data['code'] = token
 
     return httpx.post(url=url, json=data, timeout=TIMEOUT)
 
 
-def get_athlete_profile(user: 'User') -> httpx.Response:
+def get_athlete_profile(user: User) -> httpx.Response:
     url = BASE_URL + 'athlete'
-    headers = get_headers()
+    headers = get_headers(user)
     return httpx.get(url=url, headers=headers, timeout=TIMEOUT)
 
 
-def get_gears(shoes: 'Shoes') -> httpx.Response:
+def get_gear_detail(shoes: 'Shoes') -> httpx.Response:
     if not shoes.strava_id:
         raise ValueError(f'Shoes {shoes} have no strava ID')
 
-    headers = get_headers()
+    headers = get_headers(shoes.user)
     url = BASE_URL + f'gear/{shoes.strava_id}'
     return httpx.get(url=url, headers=headers, timeout=TIMEOUT)
 
@@ -77,6 +113,6 @@ def get_activity(activity: 'Activity') -> httpx.Response:
     if not activity.strava_id:
         raise ValueError(f'Activity {activity} has no strava ID')
 
-    headers = get_headers()
+    headers = get_headers(activity.user)
     url = BASE_URL + f'activities/{activity.strava_id}'
     return httpx.get(url=url, headers=headers, timeout=TIMEOUT)
