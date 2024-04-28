@@ -43,6 +43,16 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self) -> str:
         return self.username
 
+    def get_distance_unit(self) -> str:
+        if self.measurement_unit == MeasurementUnit.METRIC:
+            return 'km'
+        return 'miles'
+
+    def get_pace_unit(self) -> str:
+        if self.measurement_unit == MeasurementUnit.METRIC:
+            return 'min/km'
+        return 'min/miles'
+
 
 class StravaProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='strava_profile')

@@ -5,7 +5,27 @@
     <h1>Shoe Wear Tracker</h1>
 </div>
 {% include "web/shoes/header.html" %}
-{% for shoe in new_shoes %}
-    {{ shoe }}
-{% endfor %}
+<div class="shoes">
+    {% for shoe in new_shoes %}
+    <div class="shoes__item">
+        <div>
+            <div class="shoes__name">{{ shoe.name }}</div>
+            <div class="shoes__distance">
+                {{ shoe.converted_distance }} {{ request.user.get_distance_unit }}
+            </div>
+        </div>
+        <div>
+            <form action="" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{ shoe.id }}">
+                <input type="hidden" name="name" value="{{ shoe.name }}">
+                <input type="hidden" name="distance_covered" value="{{ shoe.distance }}">
+                <button type="submit" class="btn btn--green">Add</button>
+            </form>
+        </div>
+    </div>
+    {% empty %}
+    <p>No more shoes to add</p>
+    {% endfor %}
+</div>
 {% endblock %}

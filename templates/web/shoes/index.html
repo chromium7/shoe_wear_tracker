@@ -5,4 +5,20 @@
     <h1>Shoe Wear Tracker</h1>
 </div>
 {% include "web/shoes/header.html" %}
+<div class="shoes">
+    {% for shoe in shoes %}
+    <div class="shoes__item">
+        <div>
+            <div class="shoes__name">{{ shoe.name }}</div>
+            <div class="shoes__distance">
+                {{ shoe.converted_distance }} {{ request.user.get_distance_unit }}
+            </div>
+        </div>
+        <div>
+        </div>
+    </div>
+    {% empty %}
+    <p>No shoes to track yet</p>
+    {% endfor %}
+</div>
 {% endblock %}

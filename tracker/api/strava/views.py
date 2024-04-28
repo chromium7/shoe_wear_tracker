@@ -22,6 +22,5 @@ class Authorized(BaseAPIView):
             return ErrorResponse(form)
 
         form.save()
-        print('SUCCESS AUTHOIRZING SRATVA')
 
         return redirect('web:activities:index')

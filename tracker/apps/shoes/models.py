@@ -22,3 +22,7 @@ class Shoes(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+    @property
+    def converted_distance(self) -> float:
+        return round(self.distance_covered / 1000, 1)

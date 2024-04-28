@@ -5,7 +5,8 @@ $mobile-width: 600px;
     --text-secondary: #1D3557;
     --text-tertiary: #457B9D;
     --text-light: #F1FAEE;
-    --text-red: #E63946;
+    --red: #E63946;
+    --green: #3EC70B;
     --background: #FFFFFF;
     --outline: #A8DADC;
 }
@@ -66,6 +67,10 @@ header {
     }
 }
 
+select {
+    font-size: 16px;
+}
+
 form.full {
     display: flex;
     flex-direction: column;
@@ -91,6 +96,10 @@ form.full {
     text-align: center;
 }
 
+.right {
+    text-align: right;
+}
+
 .btn {
     display: inline-flex;
     justify-content: center;
@@ -103,7 +112,7 @@ form.full {
     color: var(--text-light);
     font-size: 16px;
     line-height: 1;
-    padding: 12px 0;
+    padding: 8px 16px;
     box-sizing: border-box;
 
     &--full {
@@ -124,12 +133,43 @@ form.full {
         background: transparent;
         color: var(--text-secondary);
     }
+
+    &--green {
+        background: var(--green);
+        color: var(--text-light);
+    }
 }
 
 .errorlist {
     list-style: none;
 
     li {
-        color: var(--text-red);
+        color: var(--red);
     }
+}
+
+.shoes {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+
+    &__header {
+        text-align: right;
+        margin: 12px 0;
+    }
+
+    &__item {
+        padding: 18px;
+        border: 1px solid var(--outline);
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    &__name {
+        font-weight: 500;
+        font-size: 18px;
+    }
+
 }
