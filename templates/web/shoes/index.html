@@ -7,16 +7,16 @@
 {% include "web/shoes/header.html" %}
 <div class="shoes">
     {% for shoe in shoes %}
-    <div class="shoes__item">
-        <div>
-            <div class="shoes__name">{{ shoe.name }}</div>
-            <div class="shoes__distance">
-                {{ shoe.converted_distance }} {{ request.user.get_distance_unit }}
+    <a href="{% url "web:shoes:details" shoe.id %}">
+        <div class="shoes__item">
+            <div>
+                <div class="shoes__name">{{ shoe.name }}</div>
+                <div class="shoes__distance">
+                    {{ shoe.converted_distance }} {{ request.user.get_distance_unit }}
+                </div>
             </div>
         </div>
-        <div>
-        </div>
-    </div>
+    </a>
     {% empty %}
     <p>No shoes to track yet</p>
     {% endfor %}

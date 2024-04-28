@@ -1,9 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Prefetch
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 
 from libraries.strava import get_athlete_shoes
+from tracker.apps.photos.models import Photo
 from tracker.core.utils import TrackerHttpRequest
 
 from .forms import AddShoesForm
@@ -22,8 +24,11 @@ def index(request: TrackerHttpRequest) -> HttpResponse:
 def details(request: TrackerHttpRequest, id: int) -> HttpResponse:
     shoes_qs = request.user.shoes.select_related("brand")
     shoes = get_object_or_404(shoes_qs, id=id)
+    photo_prefetch = Prefetch('photos', Photo.objects.order_by('created')[:4], to_attr='prefetched_photos')
+    categories = shoes.photo_categories.prefetch_related(photo_prefetch)
     context = {
-        "shoes": shoes,
+        "shoe": shoes,
+        "categories": categories,
     }
     return render(request, "web/shoes/details.html", context)
 

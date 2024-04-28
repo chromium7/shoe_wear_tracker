@@ -19,6 +19,7 @@ $mobile-width: 600px;
 
 a {
     text-decoration: none;
+    color: inherit;
 }
 
 h1 {
@@ -32,6 +33,7 @@ body {
 main {
     max-width: $mobile-width;
     min-height: 100vh;
+    padding: 20px;
     padding-top: 60px;
     margin: auto;
 }
@@ -172,4 +174,45 @@ form.full {
         font-size: 18px;
     }
 
+}
+
+.shoe {
+
+    table {
+        margin-top: 18px;
+        border-collapse: collapse;
+
+        td {
+            width: 100%;
+        }
+
+        th, td {
+            text-align: left;
+            border: 1px solid var(--outline);
+            padding: 8px;
+            padding-right: 14px;
+            white-space: nowrap;
+        }
+    }
+}
+
+.category {
+    h3 {
+        color: var(--text-secondary);
+        margin: 12px 0;
+    }
+
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+    }
+
+    &__photo {
+        aspect-ratio: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid var(--outline);
+    }
 }

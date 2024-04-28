@@ -24,5 +24,9 @@ class Shoes(models.Model):
         return self.name
 
     @property
+    def retired(self) -> bool:
+        return bool(self.retired_at)
+
+    @property
     def converted_distance(self) -> float:
         return round(self.distance_covered / 1000, 1)
