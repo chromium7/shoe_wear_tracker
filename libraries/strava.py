@@ -146,3 +146,14 @@ def get_activity(activity: 'Activity') -> httpx.Response:
     headers = get_headers(activity.user)
     url = BASE_URL + f'activities/{activity.strava_id}'
     return httpx.get(url=url, headers=headers, timeout=TIMEOUT)
+
+
+def create_webhook_subscription() -> httpx.Response:
+    url = BASE_URL + 'push_subscriptions'
+    data = {
+        'client_id': settings.STRAVA_CLIENT_ID,
+        'client_secret': settings.STRAVA_CLIENT_SECRET,
+        'callback_url': urljoin(settings.HOST_URL, reverse('api:strava:notification')),
+        'verify_token': settings.STRAVA_VERIFY_TOKEN,
+    }
+    return httpx.post(url=url, json=data, timeout=TIMEOUT)

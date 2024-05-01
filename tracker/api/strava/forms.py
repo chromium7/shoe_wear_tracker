@@ -1,9 +1,32 @@
 from django import forms
+from django.db.models import TextChoices
 
 from httpx import HTTPStatusError
 
 from libraries.strava import authorize_user
 from tracker.apps.users.models import User
+
+
+class NotificationForm(forms.Form):
+    class AspectType(TextChoices):
+        CREATE = 'create'
+        UPDATE = 'update'
+        DELETE = 'delete'
+
+    class ObjectType(TextChoices):
+        ACTIVITY = 'activity'
+        ATHLETE = 'athlete'
+
+    aspect_type = forms.ChoiceField(choices=AspectType.choices)
+    object_type = forms.ChoiceField(choices=ObjectType.choices)
+    object_id = forms.IntegerField()
+    event_time = forms.IntegerField()
+    owner_id = forms.IntegerField()
+    subscription_id = forms.IntegerField()
+    updates = forms.JSONField()
+
+    def save(self) -> dict:
+        pass
 
 
 class AuthorizationForm(forms.Form):
