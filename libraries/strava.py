@@ -10,15 +10,22 @@ from django.utils import timezone
 from django.urls import reverse
 
 from tracker.apps.users.models import User, StravaProfile
+from tracker.apps.activities.models import Activity
 from tracker.core.constants import MeasurementUnit
 
 if TYPE_CHECKING:
-    from tracker.apps.activities.models import Activity
     from tracker.apps.shoes.models import Shoes
 
 
 TIMEOUT = 10
 BASE_URL = 'https://www.strava.com/api/v3/'
+STRAVA_SPORT_TYPES = {
+    'Run': Activity.Type.RUN,
+    'VirtualRun': Activity.Type.RUN,
+    'TrailRun': Activity.Type.TRAIL,
+    'Walk': Activity.Type.WALK,
+}
+
 
 class GrantType(Enum):
     AUTHORIZATION_CODE = 'authorization_code'
@@ -33,6 +40,10 @@ class StravaShoes:
     retired: bool
     distance: int
     converted_distance: float
+
+
+class StravaException(Exception):
+    pass
 
 
 def get_headers(user: User) -> dict:
@@ -139,12 +150,9 @@ def get_gear_detail(shoes: 'Shoes') -> httpx.Response:
     return httpx.get(url=url, headers=headers, timeout=TIMEOUT)
 
 
-def get_activity(activity: 'Activity') -> httpx.Response:
-    if not activity.strava_id:
-        raise ValueError(f'Activity {activity} has no strava ID')
-
-    headers = get_headers(activity.user)
-    url = BASE_URL + f'activities/{activity.strava_id}'
+def get_activity(activity_id: str, user: User) -> httpx.Response:
+    headers = get_headers(user)
+    url = BASE_URL + f'activities/{activity_id}'
     return httpx.get(url=url, headers=headers, timeout=TIMEOUT)
 
 
@@ -157,3 +165,21 @@ def create_webhook_subscription() -> httpx.Response:
         'verify_token': settings.STRAVA_VERIFY_TOKEN,
     }
     return httpx.post(url=url, json=data, timeout=TIMEOUT)
+
+
+def view_webhook_subscription() -> httpx.Response:
+    url = BASE_URL + 'push_subscriptions'
+    data = {
+        'client_id': settings.STRAVA_CLIENT_ID,
+        'client_secret': settings.STRAVA_CLIENT_SECRET,
+    }
+    return httpx.get(url=url, params=data, timeout=TIMEOUT)
+
+
+def delete_webhook_subscription(subscription_id: str) -> httpx.Response:
+    url = BASE_URL + f'push_subscriptions/{subscription_id}'
+    data = {
+        'client_id': settings.STRAVA_CLIENT_ID,
+        'client_secret': settings.STRAVA_CLIENT_SECRET,
+    }
+    return httpx.delete(url, params=data, timeout=TIMEOUT)

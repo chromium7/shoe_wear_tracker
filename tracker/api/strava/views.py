@@ -25,11 +25,15 @@ class Notification(BaseAPIView):
     def post(self, request: Request) -> Response:
         form = NotificationForm(data=request.query_params)
         if not form.is_valid():
-            return ErrorResponse(form)
+            # Must return 200 to acknowledge webhook
+            return ErrorResponse(form=form, status=status.HTTP_200_OK)
 
-        form.save()
-        data = {}
-        return Response(data=data)
+        activity = form.save()
+        data = {
+            'status': 'ok',
+            'activity': activity.id if activity else None,
+        }
+        return Response(data=data, status=status.HTTP_200_OK)
 
 
 class Authorized(BaseAPIView):
