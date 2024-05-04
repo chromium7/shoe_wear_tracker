@@ -40,4 +40,4 @@ class ErrorResponse(Response):
                 }
             )
 
-        self.data = {"errors": errors}
+        self.data = {"status":"error", "errors": errors}
