@@ -155,7 +155,6 @@ form.full {
     flex-direction: column;
     gap: 12px;
 
-
     &__header {
         text-align: right;
         margin: 12px 0;
@@ -170,10 +169,34 @@ form.full {
     }
 
     &__name {
-        font-weight: 500;
+        font-weight: 600;
         font-size: 18px;
     }
 
+}
+
+.activities {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    &__item {
+        padding: 18px;
+        border: 1px solid var(--outline);
+        border-radius: 8px;
+    }
+
+    &__name {
+        font-weight: 600;
+        font-size: 18px;
+    }
+
+    &__details {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 4px;
+        margin: 4px 0;
+    }
 }
 
 .shoe {
@@ -201,7 +224,9 @@ form.full {
         color: var(--text-secondary);
         margin: 12px 0;
     }
+}
 
+.photos {
     &__grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);

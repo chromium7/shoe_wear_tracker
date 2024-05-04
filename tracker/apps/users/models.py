@@ -46,12 +46,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_distance_unit(self) -> str:
         if self.measurement_unit == MeasurementUnit.METRIC:
             return 'km'
-        return 'miles'
+        return 'mile'
 
     def get_pace_unit(self) -> str:
         if self.measurement_unit == MeasurementUnit.METRIC:
             return 'min/km'
-        return 'min/miles'
+        return 'min/mile'
 
 
 class StravaProfile(models.Model):

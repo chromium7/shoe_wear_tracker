@@ -19,7 +19,7 @@ class Activity(models.Model):
 
     user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="activities")
     type = ChoicesPositiveSmallIntegerField(choices=Type.choices)
-    shoes = models.ForeignKey("shoes.Shoes", on_delete=models.CASCADE, related_name="photos")
+    shoes = models.ForeignKey("shoes.Shoes", on_delete=models.CASCADE, related_name="activities")
     name = models.CharField(blank=True)
     distance = models.FloatField(default=0, help_text="in meters")
     duration = models.IntegerField(blank=True, null=True, help_text="in seconds")
@@ -65,6 +65,8 @@ class Activity(models.Model):
 
     @property
     def average_speed(self) -> str:
+        if not self.distance or not self.duration:
+            return '-'
         unit = self.user.measurement_unit
         if unit == MeasurementUnit.METRIC:
             distance = self.distance / 1000.0
@@ -78,6 +80,8 @@ class Activity(models.Model):
 
     @property
     def average_pace(self) -> str:
+        if not self.distance or not self.duration:
+            return '-'
         unit = self.user.measurement_unit
         if unit == MeasurementUnit.METRIC:
             distance = self.distance / 1000.0
@@ -89,3 +93,13 @@ class Activity(models.Model):
         avg_pace_seconds = self.duration / distance
         avg_pace_minutes = avg_pace_seconds / 60.0
         return f'{avg_pace_minutes:.2f} {unit_display}'
+
+    def get_distance_display(self) -> str:
+        if not self.distance:
+            return '-'
+        unit = self.user.measurement_unit
+        if unit == MeasurementUnit.METRIC:
+            distance = self.distance / 1000.0
+        else:
+            distance = self.distance / 1609.344
+        return f'{distance:.2f} {self.user.get_distance_unit}(s)'

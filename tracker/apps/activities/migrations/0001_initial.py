@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
                 ('distance_covered', models.FloatField(default=0)),
                 ('strava_id', models.CharField(blank=True)),
                 ('created', models.DateTimeField(default=django.utils.timezone.now)),
-                ('shoes', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='photos', to='shoes.shoes')),
+                ('shoes', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='activities', to='shoes.shoes')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='activities', to=settings.AUTH_USER_MODEL)),
             ],
         ),

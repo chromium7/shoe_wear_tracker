@@ -4,6 +4,7 @@
 <div class="center">
     <h1>{{ shoe.name }}</h1>
 </div>
+{% include "web/shoes/details_header.html" %}
 <div class="shoe">
     <table>
         {% if shoe.brand %}
@@ -24,10 +25,12 @@
 </div>
 {% for category in categories %}
 <div class="category">
-    <h3>{{ category.name }}</h2>
-    <div class="category__grid">
+    <a href="{% url "web:shoes:photo_category" shoe.id category.id %}">
+        <h3>{{ category.name }}</h2>
+    </a>
+    <div class="photos__grid">
         {% for photo in category.prefetched_photos %}
-        <div class="category__photo">
+        <div class="photos__photo">
             Photo #{{ photo.id }}
         </div>
         {% endfor %}

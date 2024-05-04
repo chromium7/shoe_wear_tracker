@@ -29,8 +29,37 @@ def details(request: TrackerHttpRequest, id: int) -> HttpResponse:
     context = {
         "shoe": shoes,
         "categories": categories,
+        'selected_tab': 'details',
     }
     return render(request, "web/shoes/details.html", context)
+
+
+@login_required
+def activities(request: TrackerHttpRequest, id: int) -> HttpResponse:
+    shoes = get_object_or_404(request.user.shoes, id=id)
+    photos_prefetch = Prefetch('photos', Photo.objects.all()[:4], to_attr='prefetched_photos')
+    activities = shoes.activities.prefetch_related(photos_prefetch).order_by('-created')
+
+    context = {
+        'shoe': shoes,
+        'activities': activities,
+        'selected_tab': 'activities',
+    }
+    return render(request, "web/shoes/activities.html", context)
+
+
+@login_required
+def photo_category(request: TrackerHttpRequest, id: int, category_id: int) -> HttpResponse:
+    shoes = get_object_or_404(request.user.shoes, id=id)
+    category = get_object_or_404(shoes.photo_categories, id=category_id)
+
+    photos = category.photos.order_by('created')
+    context = {
+        'shoe': shoes,
+        'category': category,
+        'photos': photos,
+    }
+    return render(request, "web/shoes/photo_category.html", context)
 
 
 @login_required
@@ -43,11 +72,7 @@ def strava_list(request: TrackerHttpRequest) -> HttpResponse:
     registered_shoe_ids = set(request.user.shoes.values_list("strava_id", flat=True))
     strava_shoes = get_athlete_shoes(request.user)
 
-    new_shoes = [
-        shoe
-        for shoe in strava_shoes
-        if shoe.id not in registered_shoe_ids and not shoe.retired
-    ]
+    new_shoes = [shoe for shoe in strava_shoes if shoe.id not in registered_shoe_ids and not shoe.retired]
     context = {
         "new_shoes": new_shoes,
     }
