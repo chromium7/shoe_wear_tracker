@@ -1,7 +1,7 @@
-<div class="shoes__header">
+<div class="activities__header">
     <select name="action" id="action">
-        <option value="{% url "web:shoes:index" %}" {% if selected_tab == 'index' %}selected{% endif %}>Action</option>
-        <option value="{% url "web:shoes:strava_list" %}" {% if selected_tab == 'strava_list' %}selected{% endif %}>Add Shoes</option>
+        <option value="{% url "web:activities:index" %}" {% if selected_tab == 'index' %}selected{% endif %}>New Activities</option>
+        <option value="{% url "web:activities:index" %}?filter=all" {% if selected_tab == 'index_all' %}selected{% endif %}>All Activities</option>
     </select>
 </div>
 

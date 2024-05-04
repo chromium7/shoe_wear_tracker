@@ -4,7 +4,30 @@
 <div class="center">
     <h1>Shoe Wear Tracker</h1>
 </div>
-{% for activity in activities %}
-{% endfor %}
+{% include "web/activities/header.html" %}
+<div class="activities">
+    {% for activity in activities %}
+    <a href="#">
+        <div class="activities__item">
+            <div class="activities__name">{{ activity.name }}</div>
+            <div class="activities__details">
+                <div>{{ activity.get_type_display }}</div>
+                <div>{{ activity.created }}</div>
+                <div>Distance: {{ activity.get_distance_display }}</div>
+                <div>Avg Pace: {{ activity.average_pace }}</div>
+            </div>
+            <div class="photos__grid">
+                {% for photo in activity.prefetched_photos %}
+                <div class="photos__photo">
+                    Photo #{{ photo.id }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </a>
+    {% empty %}
+    <p>No activities yet</p>
+    {% endfor %}
+</div>
 
 {% endblock %}

@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 
 from libraries.strava import get_athlete_shoes
 from tracker.apps.photos.models import Photo
@@ -16,6 +17,7 @@ def index(request: TrackerHttpRequest) -> HttpResponse:
     shoes = request.user.shoes.select_related("brand")
     context = {
         "shoes": shoes,
+        'selected_tab': 'index',
     }
     return render(request, "web/shoes/index.html", context)
 
@@ -58,8 +60,10 @@ def add_photo_category(request: TrackerHttpRequest, id: int) -> HttpResponse:
         return redirect('web:shoes:details', shoes.id)
 
     context = {
+        'title': shoes.name,
         'shoe': shoes,
         'form': form,
+        'back_url': reverse('web:shoes:details', args=[shoes.id]),
     }
     return render(request, "web/form.html", context)
 
@@ -89,8 +93,10 @@ def edit_photo_category(request: TrackerHttpRequest, id: int, category_id: int) 
         return redirect('web:shoes:details', shoes.id)
 
     context = {
+        'title': shoes.name,
         'shoe': shoes,
         'form': form,
+        'back_url': reverse('web:shoes:details', args=[shoes.id]),
     }
     return render(request, "web/form.html", context)
 
@@ -108,5 +114,6 @@ def strava_list(request: TrackerHttpRequest) -> HttpResponse:
     new_shoes = [shoe for shoe in strava_shoes if shoe.id not in registered_shoe_ids and not shoe.retired]
     context = {
         "new_shoes": new_shoes,
+        'selected_tab': 'strava_list',
     }
     return render(request, "web/shoes/strava_list.html", context)

@@ -2,8 +2,13 @@
 
 {% block content %}
 <div class="center">
-    <h1>Shoe Wear Tracker</h1>
+    <h1>{{ title|default:"Shoe Wear Tracker" }}</h1>
 </div>
+{% if back_url %}
+<div class="nav">
+    <a href="{{ back_url }}">&lt; back</a>
+</div>
+{% endif %}
 <br>
 <form action="" method="post" class="full">
     {% csrf_token %}

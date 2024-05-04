@@ -180,6 +180,11 @@ form.full {
     flex-direction: column;
     gap: 12px;
 
+    &__header {
+        text-align: right;
+        margin: 12px 0;
+    }
+
     &__item {
         padding: 18px;
         border: 1px solid var(--outline);

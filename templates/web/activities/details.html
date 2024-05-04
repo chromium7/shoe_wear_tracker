@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="center">
+    <h1>{{ activity.name }}</h1>
+</div>
+{% comment %} {% include "web/shoes/details_header.html" %} {% endcomment %}
+<div class="activity">
+    <table>
+        {% if shoe.brand %}
+        <tr>
+            <th>Brand</th>
+            <td>{{ shoe.brand.name }}</td>
+        </tr>
+        {% endif %}
+        <tr>
+            <th>Distance Covered</th>
+            <td>{{ shoe.converted_distance }} {{ request.user.get_distance_unit }}</td>
+        </tr>
+        <tr>
+            <th>Retired</th>
+            <td class="{{ shoe.retired|yesno:'red,green' }}">{{ shoe.retired|yesno }}</td>
+        </tr>
+    </table>
+</div>
+{% for category in categories %}
+<div class="category">
+    <div class="category__name">
+        <a href="{% url "web:shoes:photo_category" shoe.id category.id %}">
+            <h3>{{ category.name }}</h2>
+        </a>
+        <a href="{% url "web:shoes:edit_photo_category" shoe.id category.id %}">Edit</a>
+    </div>
+    <div class="photos__grid">
+        {% for photo in category.prefetched_photos %}
+        <div class="photos__photo">
+            Photo #{{ photo.id }}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
