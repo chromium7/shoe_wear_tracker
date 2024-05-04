@@ -224,6 +224,12 @@ form.full {
         color: var(--text-secondary);
         margin: 12px 0;
     }
+
+    &__name {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+    }
 }
 
 .photos {

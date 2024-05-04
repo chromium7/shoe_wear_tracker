@@ -26,8 +26,9 @@ def sign_in(request: TrackerHttpRequest) -> HttpResponse:
 
     context = {
         'form': form,
+        'button_name': 'Sign In',
     }
-    return render(request, 'web/auth/sign_in.html', context)
+    return render(request, 'web/form.html', context)
 
 
 def sign_out(request: TrackerHttpRequest) -> HttpResponse:

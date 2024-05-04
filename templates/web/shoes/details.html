@@ -25,9 +25,12 @@
 </div>
 {% for category in categories %}
 <div class="category">
-    <a href="{% url "web:shoes:photo_category" shoe.id category.id %}">
-        <h3>{{ category.name }}</h2>
-    </a>
+    <div class="category__name">
+        <a href="{% url "web:shoes:photo_category" shoe.id category.id %}">
+            <h3>{{ category.name }}</h2>
+        </a>
+        <a href="{% url "web:shoes:edit_photo_category" shoe.id category.id %}">Edit</a>
+    </div>
     <div class="photos__grid">
         {% for photo in category.prefetched_photos %}
         <div class="photos__photo">

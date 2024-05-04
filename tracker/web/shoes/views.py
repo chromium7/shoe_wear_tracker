@@ -2,13 +2,13 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 
 from libraries.strava import get_athlete_shoes
 from tracker.apps.photos.models import Photo
 from tracker.core.utils import TrackerHttpRequest
 
-from .forms import AddShoesForm
+from .forms import AddShoesForm, PhotoCategoryForm
 
 
 @login_required
@@ -49,6 +49,22 @@ def activities(request: TrackerHttpRequest, id: int) -> HttpResponse:
 
 
 @login_required
+def add_photo_category(request: TrackerHttpRequest, id: int) -> HttpResponse:
+    shoes = get_object_or_404(request.user.shoes, id=id)
+
+    form = PhotoCategoryForm(data=request.POST or None, shoes=shoes)
+    if form.is_valid():
+        form.save()
+        return redirect('web:shoes:details', shoes.id)
+
+    context = {
+        'shoe': shoes,
+        'form': form,
+    }
+    return render(request, "web/form.html", context)
+
+
+@login_required
 def photo_category(request: TrackerHttpRequest, id: int, category_id: int) -> HttpResponse:
     shoes = get_object_or_404(request.user.shoes, id=id)
     category = get_object_or_404(shoes.photo_categories, id=category_id)
@@ -60,6 +76,23 @@ def photo_category(request: TrackerHttpRequest, id: int, category_id: int) -> Ht
         'photos': photos,
     }
     return render(request, "web/shoes/photo_category.html", context)
+
+
+@login_required
+def edit_photo_category(request: TrackerHttpRequest, id: int, category_id: int) -> HttpResponse:
+    shoes = get_object_or_404(request.user.shoes, id=id)
+    category = get_object_or_404(shoes.photo_categories, id=category_id)
+
+    form = PhotoCategoryForm(data=request.POST or None, shoes=shoes, instance=category)
+    if form.is_valid():
+        form.save()
+        return redirect('web:shoes:details', shoes.id)
+
+    context = {
+        'shoe': shoes,
+        'form': form,
+    }
+    return render(request, "web/form.html", context)
 
 
 @login_required

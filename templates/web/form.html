@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="center">
+    <h1>Shoe Wear Tracker</h1>
+</div>
+<br>
+<form action="" method="post" class="full">
+    {% csrf_token %}
+    {% for field in form %}
+    <label for="{{ field.id_for_label }}">
+        <div>{{ field.label }}</div>
+        {{ field }}
+        {{ field.errors }}
+    </label>
+    {% endfor %}
+    {{ form.non_field_errors }}
+    <br>
+    <div>
+        <button type="submit" class="btn btn--full">{{ button_name|default:"Save" }}</button>
+    </div>
+</form>
+{% endblock %}

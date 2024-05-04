@@ -4,6 +4,7 @@ from django import forms
 
 from tracker.apps.users.models import User
 from tracker.apps.shoes.models import Shoes
+from tracker.apps.photos.models import PhotoCategory
 
 
 class AddShoesForm(forms.Form):
@@ -28,3 +29,13 @@ class AddShoesForm(forms.Form):
             distance_covered=self.cleaned_data['distance_covered'],
         )
         return shoes
+
+
+class PhotoCategoryForm(forms.ModelForm):
+    class Meta:
+        model = PhotoCategory
+        fields = ['name']
+
+    def __init__(self, shoes: Shoes, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.instance.shoes = shoes
