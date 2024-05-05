@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'compressor',
     'django_extensions',
     'rest_framework',
+    'thumbnails',
 
     # Local apps
     'tracker.apps.activities',
@@ -175,6 +176,23 @@ CACHES = {
         }
     }
 }
+
+# Thumbnails
+IMAGE_S3_BUCKET_NAME = ''
+IMAGE_S3_ACCESS_KEY_ID = ''
+IMAGE_S3_SECRET_ACCESS_KEY = ''
+THUMBNAILS: dict = {
+    'METADATA': {
+        'PREFIX': 'thumbs',
+        'BACKEND': 'thumbnails.backends.metadata.RedisBackend',
+        'db': 2,
+        'password': REDIS_PASSWORD,
+    },
+    'STORAGE': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'BASE_DIR': 'thumb',
+    'SIZES': {},
+}
+
 
 # REST Framework configs
 API_AUTHENTICATION_TOKEN = ''
