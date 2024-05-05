@@ -90,9 +90,10 @@ class Activity(models.Model):
             distance = self.distance / 1609.344
             unit_display = 'min/mile'
 
-        avg_pace_seconds = self.duration / distance
-        avg_pace_minutes = avg_pace_seconds / 60.0
-        return f'{avg_pace_minutes:.2f} {unit_display}'
+        pace_in_minutes = self.duration / distance / 60.0
+        minutes = int(pace_in_minutes)
+        seconds = int((pace_in_minutes - minutes) * 60)
+        return f'{minutes}:{seconds:02d} {unit_display}'
 
     def get_distance_display(self) -> str:
         if not self.distance:
@@ -102,7 +103,7 @@ class Activity(models.Model):
             distance = self.distance / 1000.0
         else:
             distance = self.distance / 1609.344
-        return f'{distance:.2f} {self.user.get_distance_unit}(s)'
+        return f'{distance:.2f} {self.user.get_distance_unit()}'
 
     def get_duration_display(self) -> str:
         if not self.duration:

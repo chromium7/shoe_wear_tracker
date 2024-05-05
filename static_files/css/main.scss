@@ -164,8 +164,12 @@ form.full {
         padding: 18px;
         border: 1px solid var(--outline);
         border-radius: 8px;
-        display: flex;
-        justify-content: space-between;
+
+        &--action {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
     }
 
     &__name {
@@ -189,6 +193,12 @@ form.full {
         padding: 18px;
         border: 1px solid var(--outline);
         border-radius: 8px;
+
+        &--action {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
     }
 
     &__name {

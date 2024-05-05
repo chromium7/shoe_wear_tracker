@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="center">
+    <h1>Shoe Wear Tracker</h1>
+</div>
+{% include "web/activities/header.html" %}
+{{ form.errors }}
+<div class="activities">
+    {% for activity in new_activities %}
+    <div class="activities__item activities__item--action">
+        <div>
+            <div class="activities__name">{{ activity.name }}</div>
+            <div>{{ activity.shoes.name }}</div>
+            <div>{{ activity.created }}</div>
+            <div class="activities__distance">
+                {{ activity.converted_distance }} {{ request.user.get_distance_unit }}
+            </div>
+        </div>
+        <div>
+            <form action="" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{ activity.id }}">
+                <input type="hidden" name="name" value="{{ activity.name }}">
+                <input type="hidden" name="distance" value="{{ activity.distance }}">
+                <input type="hidden" name="duration" value="{{ activity.moving_time }}">
+                <input type="hidden" name="type" value="{{ activity.type }}">
+                <input type="hidden" name="shoes_id" value="{{ activity.shoes_id }}">
+                <input type="hidden" name="created" value="{{ activity.created|date:'Y-m-d H:m:s' }}">
+                <button type="submit" class="btn btn--green">Add</button>
+            </form>
+        </div>
+    </div>
+    {% empty %}
+    <p>No more activities to add</p>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,9 +1,11 @@
 from dataclasses import dataclass, fields
+from datetime import datetime
 from enum import Enum
 from urllib.parse import urlencode, urljoin
-from typing import List, TYPE_CHECKING
+from typing import List, Optional, TYPE_CHECKING
 
 import httpx
+from dateutil import parser
 
 from django.conf import settings
 from django.utils import timezone
@@ -30,6 +32,22 @@ STRAVA_SPORT_TYPES = {
 class GrantType(Enum):
     AUTHORIZATION_CODE = 'authorization_code'
     REFRESH_TOKEN = 'refresh_token'
+
+
+@dataclass
+class StravaActivity:
+    id: str
+    name: str
+    distance: float
+    moving_time: int
+    type: str
+    created: datetime
+    shoes_id: str
+    shoes: Optional['Shoes'] = None
+
+    @property
+    def converted_distance(self) -> float:
+        return round(self.distance / 1000, 1)
 
 
 @dataclass
@@ -129,8 +147,8 @@ def get_athlete_shoes(user: User) -> List[StravaShoes]:
     shoes_attributes = {field.name for field in fields(StravaShoes)}
     result = []
     for shoes_data in data['shoes']:
-        data = {key: value for key, value in shoes_data.items() if key in shoes_attributes}
-        result.append(StravaShoes(**data))
+        attributes = {key: value for key, value in shoes_data.items() if key in shoes_attributes}
+        result.append(StravaShoes(**attributes))
 
     return result
 
@@ -150,7 +168,37 @@ def get_gear_detail(shoes: 'Shoes') -> httpx.Response:
     return httpx.get(url=url, headers=headers, timeout=TIMEOUT)
 
 
-def get_activity(activity_id: str, user: User) -> httpx.Response:
+def get_athlete_activities(user: User, after: datetime) -> httpx.Response:
+    response = get_activities(user, after)
+    response.raise_for_status()
+
+    data = response.json()
+    activity_attributes = {field.name for field in fields(StravaActivity)}
+    result = []
+    for activity_data in data:
+        attributes = {key: value for key, value in activity_data.items() if key in activity_attributes}
+        attributes.update({
+            'created': parser.parse(activity_data['start_date']),
+            'shoes_id': activity_data['gear_id'],
+        })
+        activity = StravaActivity(**attributes)
+        if STRAVA_SPORT_TYPES.get(activity.type):
+            result.append(activity)
+
+    # Reverse to sort activities by descending time
+    return result[::-1]
+
+
+def get_activities(user: User, after: datetime) -> httpx.Response:
+    headers = get_headers(user)
+    url = BASE_URL + 'activities'
+    query = {
+        'after': int(after.timestamp()),
+    }
+    return httpx.get(url=url, params=query, headers=headers, timeout=TIMEOUT)
+
+
+def get_activity_detail(activity_id: str, user: User) -> httpx.Response:
     headers = get_headers(user)
     url = BASE_URL + f'activities/{activity_id}'
     return httpx.get(url=url, headers=headers, timeout=TIMEOUT)
