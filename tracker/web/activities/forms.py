@@ -60,6 +60,14 @@ class ActivityPhotoForm(forms.ModelForm):
         model = Photo
         fields = ['category', 'file']
 
+
+class BaseActivityPhotoFormSet(forms.BaseFormSet):
     def __init__(self, activity: Activity, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self.instance.activity = activity
+        self.activity = activity
+
+    def clean(self) -> None:
+        if any(self.errors):
+            return
+        for form in self.forms:
+            form.instance.activity = self.activity

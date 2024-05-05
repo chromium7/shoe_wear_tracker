@@ -12,6 +12,7 @@
 <br>
 <form action="" method="post" class="full" enctype="multipart/form-data">
     {% csrf_token %}
+    {% comment %} Form {% endcomment %}
     {% for field in form %}
     <label for="{{ field.id_for_label }}">
         <div>{{ field.label }}</div>
@@ -20,6 +21,12 @@
     </label>
     {% endfor %}
     {{ form.non_field_errors }}
+
+    {% comment %} Formset {% endcomment %}
+    {{ formset.management_form }}
+    {% for form in formset %}
+        {{ form }}
+    {% endfor %}
     <br>
     <div>
         <button type="submit" class="btn btn--full">{{ button_name|default:"Save" }}</button>

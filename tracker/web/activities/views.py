@@ -4,6 +4,7 @@ from datetime import timedelta
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch
+from django.forms import formset_factory
 from django.http import HttpResponse
 from django.urls import reverse
 from django.utils import timezone
@@ -13,7 +14,7 @@ from libraries.strava import get_athlete_activities
 from tracker.apps.photos.models import Photo
 from tracker.core.utils import TrackerHttpRequest
 
-from .forms import ActivityPhotoForm, AddActivityForm
+from .forms import ActivityPhotoForm, AddActivityForm, BaseActivityPhotoFormSet
 
 
 @login_required
@@ -55,15 +56,22 @@ def details(request: TrackerHttpRequest, id: int) -> HttpResponse:
 @login_required
 def add_photo(request: TrackerHttpRequest, id: int) -> HttpResponse:
     activity = get_object_or_404(request.user.activities, id=id, user_id=request.user.id)
+    photo_categories = activity.shoes.photo_categories.all()
 
-    form = ActivityPhotoForm(data=request.POST or None, files=request.FILES or None, activity=activity)
-    if form.is_valid():
-        form.save()
+    initials = [
+        {'category': category.id} for category in photo_categories
+    ]
+
+    ActivityPhotoFormSet = formset_factory(form=ActivityPhotoForm, formset=BaseActivityPhotoFormSet, extra=0)
+    formset = ActivityPhotoFormSet(data=request.POST or None, files=request.FILES or None, activity=activity, initial=initials)
+    if formset.is_valid():
+        for form in formset.forms:
+            form.save()
         return redirect('web:activities:details', activity.id)
 
     context = {
         'title': f'Add photo to {activity.name}',
-        'form': form,
+        'formset': formset,
         'back_url': reverse('web:activities:details', args=[activity.id]),
     }
     return render(request, 'web/form.html', context)
@@ -81,7 +89,6 @@ def strava_list(request: TrackerHttpRequest) -> HttpResponse:
     registered_activity_ids = set(
         request.user.activities.filter(created__gte=after).values_list('strava_id', flat=True)
     )
-    print(registered_activity_ids)
     active_shoes_mapping = {shoe.strava_id: shoe for shoe in request.user.shoes.filter(retired_at=None)}
     # Get activities in the past 30 days
     strava_activities = get_athlete_activities(request.user, after=after)
