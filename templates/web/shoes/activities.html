@@ -7,7 +7,7 @@
 {% include "web/shoes/details_header.html" %}
 <div class="activities">
     {% for activity in activities %}
-    <a href="#">
+    <a href="{% url "web:activities:details" activity.id %}">
         <div class="activities__item">
             <div class="activities__name">{{ activity.name }}</div>
             <div class="activities__details">
@@ -18,9 +18,11 @@
             </div>
             <div class="photos__grid">
                 {% for photo in activity.prefetched_photos %}
-                <div class="photos__photo">
-                    Photo #{{ photo.id }}
-                </div>
+                <a href="{{ photo.file.url }}" target="_blank">
+                    <div class="photos__photo">
+                        <img src="{{ photo.file.thumbnails.square.url }}">
+                    </div>
+                </a>
                 {% endfor %}
             </div>
         </div>

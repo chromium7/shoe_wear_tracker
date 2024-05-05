@@ -1,0 +1,15 @@
+<div class="shoes__header">
+    <select name="action" id="action">
+        <option value="{% url "web:activities:details" activity.id %}" {% if selected_tab == 'details' %}selected{% endif %}>Action</option>
+        <option value="{% url "web:activities:add_photo" activity.id %}">Add photos</option>
+    </select>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const actionInput = document.querySelector('#action');
+        actionInput.addEventListener('change', () => {
+            window.location.href = actionInput.value;
+        })
+    });
+</script>

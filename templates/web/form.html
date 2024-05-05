@@ -10,7 +10,7 @@
 </div>
 {% endif %}
 <br>
-<form action="" method="post" class="full">
+<form action="" method="post" class="full" enctype="multipart/form-data">
     {% csrf_token %}
     {% for field in form %}
     <label for="{{ field.id_for_label }}">

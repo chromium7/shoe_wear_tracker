@@ -190,7 +190,13 @@ THUMBNAILS: dict = {
     },
     'STORAGE': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
     'BASE_DIR': 'thumb',
-    'SIZES': {},
+    'SIZES': {
+        'square': {
+            'PROCESSORS': [
+                {'PATH': 'thumbnails.processors.resize', 'width': 320, 'height': 320, 'method': 'fill'},
+            ],
+        },
+    },
 }
 
 

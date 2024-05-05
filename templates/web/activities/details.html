@@ -4,38 +4,51 @@
 <div class="center">
     <h1>{{ activity.name }}</h1>
 </div>
-{% comment %} {% include "web/shoes/details_header.html" %} {% endcomment %}
+{% include "web/activities/details_header.html" %}
 <div class="activity">
     <table>
-        {% if shoe.brand %}
         <tr>
-            <th>Brand</th>
-            <td>{{ shoe.brand.name }}</td>
-        </tr>
-        {% endif %}
-        <tr>
-            <th>Distance Covered</th>
-            <td>{{ shoe.converted_distance }} {{ request.user.get_distance_unit }}</td>
+            <th>Type</th>
+            <td>{{ activity.get_type_display }}</td>
         </tr>
         <tr>
-            <th>Retired</th>
-            <td class="{{ shoe.retired|yesno:'red,green' }}">{{ shoe.retired|yesno }}</td>
+            <th>Shoes</th>
+            <td>
+                <a href="{% url "web:shoes:details" activity.shoes_id %}">{{ activity.shoes.name }}</a>
+            </td>
+        </tr>
+        <tr>
+            <th>Date</th>
+            <td>{{ activity.created }}</td>
+        </tr>
+        <tr>
+            <th>Distance</th>
+            <td>{{ activity.get_distance_display }}</td>
+        </tr>
+        <tr>
+            <th>Duration</th>
+            <td>{{ activity.get_duration_display }}</td>
+        </tr>
+        <tr>
+            <th>Average Pace</th>
+            <td>{{ activity.average_pace }}</td>
         </tr>
     </table>
 </div>
-{% for category in categories %}
+{% for category, photos in photo_by_categories.items %}
 <div class="category">
     <div class="category__name">
-        <a href="{% url "web:shoes:photo_category" shoe.id category.id %}">
+        <a href="{% url "web:shoes:photo_category" activity.shoes_id category.id %}">
             <h3>{{ category.name }}</h2>
         </a>
-        <a href="{% url "web:shoes:edit_photo_category" shoe.id category.id %}">Edit</a>
     </div>
     <div class="photos__grid">
-        {% for photo in category.prefetched_photos %}
-        <div class="photos__photo">
-            Photo #{{ photo.id }}
-        </div>
+        {% for photo in photos %}
+        <a href="{{ photo.file.url }}" target="_blank">
+            <div class="photos__photo">
+                <img src="{{ photo.file.thumbnails.square.url }}">
+            </div>
+        </a>
         {% endfor %}
     </div>
 </div>

@@ -33,9 +33,11 @@
     </div>
     <div class="photos__grid">
         {% for photo in category.prefetched_photos %}
-        <div class="photos__photo">
-            Photo #{{ photo.id }}
-        </div>
+        <a href="{{ photo.file.url }}" target="_blank">
+            <div class="photos__photo">
+                <img src="{{ photo.file.thumbnails.square.url }}">
+            </div>
+        </a>
         {% endfor %}
     </div>
 </div>

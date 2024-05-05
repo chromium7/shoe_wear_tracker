@@ -78,12 +78,12 @@ form.full {
     flex-direction: column;
     gap: 12px;
 
-    label, input {
+    label, input, select {
         width: 100%;
         font-size: 16px;
     }
 
-    input {
+    input, select {
         display: block;
         outline: none;
         border: none;
@@ -204,6 +204,7 @@ form.full {
     }
 }
 
+.activity,
 .shoe {
 
     table {
@@ -245,10 +246,15 @@ form.full {
     }
 
     &__photo {
-        aspect-ratio: 1;
         display: flex;
         justify-content: center;
         align-items: center;
         border: 1px solid var(--outline);
+
+        img {
+            aspect-ratio: 1;
+            object-fit: cover;
+            max-width: 100%;
+        }
     }
 }

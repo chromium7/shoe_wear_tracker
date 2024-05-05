@@ -103,3 +103,9 @@ class Activity(models.Model):
         else:
             distance = self.distance / 1609.344
         return f'{distance:.2f} {self.user.get_distance_unit}(s)'
+
+    def get_duration_display(self) -> str:
+        if not self.duration:
+            return '-'
+        duration_in_min = self.duration // 60
+        return f'{duration_in_min} minutes'
