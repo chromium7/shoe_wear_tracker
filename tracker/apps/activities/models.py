@@ -23,6 +23,7 @@ class Activity(models.Model):
     name = models.CharField(blank=True)
     distance = models.FloatField(default=0, help_text="in meters")
     duration = models.IntegerField(blank=True, null=True, help_text="in seconds")
+    shoe_distance = models.FloatField(blank=True, null=True, help_text="in meters")
     strava_id = models.CharField(blank=True)
     created = models.DateTimeField(default=timezone.now)
 
@@ -34,31 +35,30 @@ class Activity(models.Model):
         """Creates activity from strava ID
         Duplicate activity should be validated outside this function.
         """
-        from libraries.strava import get_activity, STRAVA_SPORT_TYPES, StravaException
+        from libraries.strava import get_athlete_activity, StravaException
 
-        response = get_activity(strava_id, user)
-        response.raise_for_status()
-        data = response.json()
+        strava_activity = get_athlete_activity(strava_id, user)
+        if not strava_activity:
+            raise StravaException("Invalid activity ID")
 
-        sport_type = STRAVA_SPORT_TYPES.get(data["sport_type"])
-        if not sport_type:
-            raise StravaException("Invalid strava sport type")
-
-        gear_id = data.get("gear_id")
-        shoes = user.shoes.filter(strava_id=gear_id).first()
+        shoes = user.shoes.filter(strava_id=strava_activity.shoes_id).first()
         if not shoes:
             raise StravaException("Invalid activity gear ID")
 
+        latest_activity = shoes.activities.order_by('-created').filter(created__lt=strava_activity.created).first()
+        current_distance_traveled = latest_activity.shoe_distance + strava_activity.distance
         updated_data = {
-            'type': sport_type,
+            'type': strava_activity.type,
             'shoes': shoes,
-            'name': data['name'],
-            'duration': data['moving_time'],  # in seconds
-            'distance': data['distance'],  # in meters
+            'name': strava_activity.name,
+            'duration': strava_activity.moving_time,  # in seconds
+            'distance': strava_activity.distance,  # in meters
+            'created': strava_activity.created,
+            'shoe_distance': current_distance_traveled,
         }
         activity, _ = Activity.objects.update_or_create(
             user=user,
-            strava_id=data["id"],
+            strava_id=strava_activity.id,
             defaults=updated_data,
         )
         return activity

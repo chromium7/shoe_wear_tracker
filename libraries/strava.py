@@ -198,6 +198,23 @@ def get_activities(user: User, after: datetime) -> httpx.Response:
     return httpx.get(url=url, params=query, headers=headers, timeout=TIMEOUT)
 
 
+def get_athlete_activity(activity_id: str, user: User) -> Optional[StravaActivity]:
+    response = get_activity_detail(activity_id, user)
+    response.raise_for_status()
+    data = response.json()
+    activity_attributes = {field.name for field in fields(StravaActivity)}
+    attributes = {key: value for key, value in data.items() if key in activity_attributes}
+    attributes.update({
+        'created': parser.parse(data['start_date']),
+        'shoes_id': data['gear_id'],
+    })
+    activity = StravaActivity(**attributes)
+    if not STRAVA_SPORT_TYPES.get(activity.type):
+        return None
+
+    return activity
+
+
 def get_activity_detail(activity_id: str, user: User) -> httpx.Response:
     headers = get_headers(user)
     url = BASE_URL + f'activities/{activity_id}'

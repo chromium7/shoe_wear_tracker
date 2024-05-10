@@ -43,14 +43,21 @@ class AddActivityForm(forms.Form):
         return shoes
 
     def save(self) -> Activity:
+        shoes = self.cleaned_data['shoes_id']
+        created = self.cleaned_data['created']
+        distance = self.cleaned_data['distance']
+        latest_activity = shoes.activities.order_by('-created').filter(created__lt=created).first()
+        current_distance_traveled = latest_activity.shoe_distance + distance
+
         activity = self.user.activities.create(
             strava_id=self.cleaned_data['id'],
             name=self.cleaned_data['name'],
             type=self.cleaned_data['type'],
-            shoes=self.cleaned_data['shoes_id'],
-            distance=self.cleaned_data['distance'],
+            shoes=shoes,
+            distance=distance,
             duration=self.cleaned_data['duration'],
-            created=self.cleaned_data['created'],
+            created=created,
+            shoe_distance=current_distance_traveled,
         )
         return activity
 
