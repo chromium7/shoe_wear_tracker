@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional
 
 from django import forms
 
@@ -59,6 +59,16 @@ class ActivityPhotoForm(forms.ModelForm):
     class Meta:
         model = Photo
         fields = ['category', 'file']
+
+    def __init__(self, shoes: Shoes, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.fields['category'].queryset = shoes.photo_categories.all()
+        self.fields['file'].required = False
+
+    def save(self) -> Optional[Photo]:
+        if not self.cleaned_data['file']:
+            return None
+        return super().save()
 
 
 class BaseActivityPhotoFormSet(forms.BaseFormSet):

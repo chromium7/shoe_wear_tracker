@@ -18,11 +18,9 @@
             </div>
             <div class="photos__grid">
                 {% for photo in activity.prefetched_photos %}
-                <a href="{{ photo.file.url }}" target="_blank">
-                    <div class="photos__photo">
-                        <img src="{{ photo.file.thumbnails.square.url }}">
-                    </div>
-                </a>
+                <div class="photos__photo">
+                    <img src="{{ photo.file.thumbnails.square.url }}">
+                </div>
                 {% endfor %}
             </div>
         </div>

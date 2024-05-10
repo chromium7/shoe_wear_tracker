@@ -55,15 +55,19 @@ def details(request: TrackerHttpRequest, id: int) -> HttpResponse:
 
 @login_required
 def add_photo(request: TrackerHttpRequest, id: int) -> HttpResponse:
-    activity = get_object_or_404(request.user.activities, id=id, user_id=request.user.id)
+    activity = get_object_or_404(request.user.activities.select_related('shoes'), id=id, user_id=request.user.id)
     photo_categories = activity.shoes.photo_categories.all()
 
-    initials = [
-        {'category': category.id} for category in photo_categories
-    ]
+    initials = [{'category': category.id} for category in photo_categories]
 
     ActivityPhotoFormSet = formset_factory(form=ActivityPhotoForm, formset=BaseActivityPhotoFormSet, extra=0)
-    formset = ActivityPhotoFormSet(data=request.POST or None, files=request.FILES or None, activity=activity, initial=initials)
+    formset = ActivityPhotoFormSet(
+        data=request.POST or None,
+        files=request.FILES or None,
+        activity=activity,
+        initial=initials,
+        form_kwargs={'shoes': activity.shoes},
+    )
     if formset.is_valid():
         for form in formset.forms:
             form.save()
@@ -72,6 +76,26 @@ def add_photo(request: TrackerHttpRequest, id: int) -> HttpResponse:
     context = {
         'title': f'Add photo to {activity.name}',
         'formset': formset,
+        'back_url': reverse('web:activities:details', args=[activity.id]),
+    }
+    return render(request, 'web/form.html', context)
+
+
+@login_required
+def edit_photo(request: TrackerHttpRequest, id: int, photo_id: int) -> HttpResponse:
+    activity = get_object_or_404(request.user.activities, id=id)
+    photo = get_object_or_404(activity.photos, id=photo_id)
+
+    form = ActivityPhotoForm(
+        data=request.POST or None, files=request.FILES or None, shoes=activity.shoes, instance=photo
+    )
+    if form.is_valid():
+        form.save()
+        return redirect('web:activities:details', activity.id)
+
+    context = {
+        'title': f'Edit photo {activity.name}',
+        'form': form,
         'back_url': reverse('web:activities:details', args=[activity.id]),
     }
     return render(request, 'web/form.html', context)

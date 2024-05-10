@@ -14,6 +14,8 @@ class PhotoCategory(models.Model):
 
 class Photo(models.Model):
     category = models.ForeignKey(PhotoCategory, on_delete=models.SET_NULL, related_name='photos', null=True)
-    activity = models.ForeignKey('activities.Activity', on_delete=models.CASCADE, related_name='photos')
+    activity = models.ForeignKey(
+        'activities.Activity', on_delete=models.CASCADE, related_name='photos', blank=True, null=True
+    )
     file = ImageField(upload_to='photos/%Y/%m/%d')
     created = models.DateTimeField(default=timezone.now)
