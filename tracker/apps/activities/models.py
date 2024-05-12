@@ -95,6 +95,16 @@ class Activity(models.Model):
         seconds = int((pace_in_minutes - minutes) * 60)
         return f'{minutes}:{seconds:02d} {unit_display}'
 
+    def get_shoe_distance_display(self) -> str:
+        if not self.shoe_distance:
+            return '-'
+        unit = self.user.measurement_unit
+        if unit == MeasurementUnit.METRIC:
+            shoe_distance = self.shoe_distance / 1000.0
+        else:
+            shoe_distance = self.shoe_distance / 1609.344
+        return f'{shoe_distance:.2f} {self.user.get_distance_unit()}'
+
     def get_distance_display(self) -> str:
         if not self.distance:
             return '-'
