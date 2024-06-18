@@ -288,3 +288,26 @@ form.full {
         }
     }
 }
+
+.pagination {
+    margin: 12px 0;
+
+    a {
+        color: var(--text-secondary);
+    }
+
+    span {
+        font-size: 22px;
+        line-height: 0px;
+        position: relative;
+        top: 2px;
+    }
+
+    .prev {
+        float: left;
+    }
+
+    .next {
+        float: right;
+    }
+}

@@ -12,24 +12,29 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from libraries.strava import get_athlete_activities
 from tracker.apps.photos.models import Photo
-from tracker.core.utils import TrackerHttpRequest
+from tracker.core.utils import TrackerHttpRequest, Paginator
 
-from .forms import ActivityPhotoForm, AddActivityForm, BaseActivityPhotoFormSet
+from .forms import ActivityFilterForm, ActivityPhotoForm, AddActivityForm, BaseActivityPhotoFormSet
 
 
 @login_required
 def index(request: TrackerHttpRequest) -> HttpResponse:
-    type_filter = request.GET.get('filter')
-    photos_prefetch = Prefetch('photos', Photo.objects.all()[:4], to_attr='prefetched_photos')
+    photos_prefetch = Prefetch('photos', Photo.objects.order_by('category_id')[:4], to_attr='prefetched_photos')
     activities_qs = request.user.activities.prefetch_related(photos_prefetch).order_by('-created')
-    selected_tab = 'index_all'
-    if type_filter != 'all':
-        activities_qs = activities_qs.filter(photos=None)
+
+    form = ActivityFilterForm(data=request.GET)
+    if form.is_valid():
+        activities_qs = form.filter_activities(activity_qs=activities_qs)
+        page = form.cleaned_data['page']
+        selected_tab = form.get_selected_tab()
+    else:
+        page = 1
         selected_tab = 'index'
 
-    activities = activities_qs
+    paginator = Paginator(activities_qs, page, 10)
     context = {
-        'activities': activities,
+        'activities': paginator.objects,
+        'paginator': paginator,
         'selected_tab': selected_tab,
     }
     return render(request, 'web/activities/index.html', context)

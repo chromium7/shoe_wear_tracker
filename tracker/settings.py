@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'rest_framework',
     'thumbnails',
+    'querystring_tag',
 
     # Local apps
     'tracker.apps.activities',

@@ -1,12 +1,40 @@
 from typing import Any, Optional
 
 from django import forms
+from django.db.models import TextChoices, QuerySet
 
 from libraries.strava import STRAVA_SPORT_TYPES
 from tracker.apps.activities.models import Activity
 from tracker.apps.photos.models import Photo
 from tracker.apps.shoes.models import Shoes
 from tracker.apps.users.models import User
+
+
+class ActivityFilterForm(forms.Form):
+    class Filter(TextChoices):
+        ALL = 'all'
+        NEW = 'new'
+
+    filter = forms.ChoiceField(required=False, initial=Filter.NEW, choices=Filter.choices)
+    page = forms.IntegerField(required=False)
+
+    def clean_page(self) -> int:
+        page = self.cleaned_data['page'] or 1
+        if page <= 0:
+            page = 1
+        return page
+
+    def filter_activities(self, activity_qs: QuerySet) -> QuerySet:
+        filter = self.cleaned_data['filter']
+
+        if filter != self.Filter.ALL:
+            activity_qs = activity_qs.filter(photos=None)
+
+        return activity_qs
+
+    def get_selected_tab(self) -> str:
+        filter = self.cleaned_data.get('filter')
+        return 'index_all' if filter == self.Filter.ALL else 'index'
 
 
 class AddActivityForm(forms.Form):
