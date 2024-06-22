@@ -11,8 +11,7 @@ class ShoeBrand(models.Model):
 
 class Shoes(models.Model):
     user = models.ForeignKey('users.User', related_name='shoes', on_delete=models.CASCADE)
-    brand = models.ForeignKey(ShoeBrand, related_name='shoes', on_delete=models.SET_NULL,
-                              blank=True, null=True)
+    brand = models.ForeignKey(ShoeBrand, related_name='shoes', on_delete=models.SET_NULL, blank=True, null=True)
     name = models.CharField()
     note = models.TextField(blank=True)
     distance_covered = models.FloatField(default=0)
@@ -30,3 +29,9 @@ class Shoes(models.Model):
     @property
     def converted_distance(self) -> float:
         return round(self.distance_covered / 1000, 1)
+
+    def recalculate_distance_covered(self) -> None:
+        self.distance_covered = (
+            self.activities.aggregate(total_distance=models.Sum('distance'))['total_distance'] or 0
+        )
+        self.save(update_fields=['distance_covered'])

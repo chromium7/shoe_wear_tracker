@@ -4,6 +4,7 @@
         <option value="{% url "web:shoes:activities" shoe.id %}" {% if selected_tab == 'activities' %}selected{% endif %}>Activities</option>
         <option value="{% url "web:shoes:add_photo_category" shoe.id %}">Add Photo Category</option>
         <option value="{% url "web:shoes:add_photo" shoe.id %}">Add Photos</option>
+        <option value="{% url "web:shoes:update_distance" shoe.id %}">Recalculate distance</option>
     </select>
 </div>
 

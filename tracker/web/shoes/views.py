@@ -146,3 +146,11 @@ def strava_list(request: TrackerHttpRequest) -> HttpResponse:
         'selected_tab': 'strava_list',
     }
     return render(request, "web/shoes/strava_list.html", context)
+
+
+@login_required
+def update_distance(request: TrackerHttpRequest, id: int) -> HttpResponse:
+    shoes = get_object_or_404(request.user.shoes, id=id)
+    shoes.recalculate_distance_covered()
+    messages.success(request, f'Shoes {shoes.name} distance has been updated')
+    return redirect('web:shoes:details', shoes.id)

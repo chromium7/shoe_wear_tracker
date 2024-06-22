@@ -6,7 +6,9 @@ $mobile-width: 600px;
     --text-tertiary: #457B9D;
     --text-light: #F1FAEE;
     --red: #E63946;
+    --red-light: #ffcace;
     --green: #3EC70B;
+    --green-light: #e4fadc;
     --background: #FFFFFF;
     --outline: #A8DADC;
 }
@@ -309,5 +311,20 @@ form.full {
 
     .next {
         float: right;
+    }
+}
+
+.messages {
+    background: var(--green-light);
+    color: var(--green);
+    text-align: center;
+
+    div {
+        padding: 6px;
+    }
+
+    .error {
+        background: var(--red-light);
+        color: var(--red);
     }
 }
