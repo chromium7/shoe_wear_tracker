@@ -5,10 +5,11 @@ from django.forms import formset_factory
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.views.decorators.http import require_POST
 
 from libraries.strava import get_athlete_shoes
 from tracker.apps.photos.models import Photo
-from tracker.core.utils import TrackerHttpRequest
+from tracker.core.utils import TrackerHttpRequest, Paginator
 from tracker.web.activities.forms import ActivityPhotoForm
 
 from .forms import AddShoesForm, PhotoCategoryForm
@@ -41,12 +42,15 @@ def details(request: TrackerHttpRequest, id: int) -> HttpResponse:
 @login_required
 def activities(request: TrackerHttpRequest, id: int) -> HttpResponse:
     shoes = get_object_or_404(request.user.shoes, id=id)
-    photos_prefetch = Prefetch('photos', Photo.objects.all()[:4], to_attr='prefetched_photos')
+    photos_prefetch = Prefetch('photos', Photo.objects.order_by('category_id')[:4], to_attr='prefetched_photos')
     activities = shoes.activities.prefetch_related(photos_prefetch).order_by('-created')
 
+    page = int(request.GET.get('page', 1))
+    paginator = Paginator(activities, page, 10)
     context = {
         'shoe': shoes,
-        'activities': activities,
+        'activities': paginator.objects,
+        'paginator': paginator,
         'selected_tab': 'activities',
     }
     return render(request, "web/shoes/activities.html", context)
@@ -149,8 +153,18 @@ def strava_list(request: TrackerHttpRequest) -> HttpResponse:
 
 
 @login_required
+@require_POST
 def update_distance(request: TrackerHttpRequest, id: int) -> HttpResponse:
     shoes = get_object_or_404(request.user.shoes, id=id)
     shoes.recalculate_distance_covered()
     messages.success(request, f'Shoes {shoes.name} distance has been updated')
+    return redirect('web:shoes:details', shoes.id)
+
+
+@login_required
+@require_POST
+def retire(request: TrackerHttpRequest, id: int) -> HttpResponse:
+    shoes = get_object_or_404(request.user.shoes, id=id)
+    shoes.retire()
+    messages.success(request, f'Shoes {shoes.name} has been retired')
     return redirect('web:shoes:details', shoes.id)

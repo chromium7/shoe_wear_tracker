@@ -35,3 +35,7 @@ class Shoes(models.Model):
             self.activities.aggregate(total_distance=models.Sum('distance'))['total_distance'] or 0
         )
         self.save(update_fields=['distance_covered'])
+
+    def retire(self) -> None:
+        self.retired_at = timezone.now()
+        self.save(update_fields=['retired_at'])

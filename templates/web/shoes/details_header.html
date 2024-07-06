@@ -2,17 +2,33 @@
     <select name="action" id="action">
         <option value="{% url "web:shoes:details" shoe.id %}" {% if selected_tab == 'details' %}selected{% endif %}>Action</option>
         <option value="{% url "web:shoes:activities" shoe.id %}" {% if selected_tab == 'activities' %}selected{% endif %}>Activities</option>
+        <option value="post#recalculate-distance-form">Recalculate distance</option>
+        {% if not shoe.retired %}
         <option value="{% url "web:shoes:add_photo_category" shoe.id %}">Add Photo Category</option>
         <option value="{% url "web:shoes:add_photo" shoe.id %}">Add Photos</option>
-        <option value="{% url "web:shoes:update_distance" shoe.id %}">Recalculate distance</option>
+        <option value="post#retire-form">Retire</option>
+        {% endif %}
     </select>
+    <form action="{% url "web:shoes:update_distance" shoe.id %}" method="post" id="recalculate-distance-form">
+        {% csrf_token %}
+    </form>
+    <form action="{% url "web:shoes:retire" shoe.id %}" method="post" id="retire-form">
+        {% csrf_token %}
+    </form>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const actionInput = document.querySelector('#action');
         actionInput.addEventListener('change', () => {
-            window.location.href = actionInput.value;
+            const value = actionInput.value;
+            if (value.startsWith('post')) {
+                const args = value.split('#');
+                const formId = args[1];
+                document.querySelector(`#${formId}`).submit();
+            } else {
+                window.location.href = value;
+            }
         })
     });
 </script>

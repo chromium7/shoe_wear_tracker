@@ -14,4 +14,5 @@ urlpatterns = [
     path('<int:id>/photo-category/<int:category_id>/edit/', views.edit_photo_category, name="edit_photo_category"),
     path('<int:id>/photos/add/', views.add_photo, name="add_photo"),
     path('<int:id>/activites/', views.activities, name="activities"),
+    path('<int:id>/retire/', views.retire, name="retire"),
 ]
