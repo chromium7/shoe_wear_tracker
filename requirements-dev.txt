@@ -1,4 +1,4 @@
-django-debug-toolbar==4.4.3
+django-debug-toolbar==4.4.5
 
 mypy==1.10.1
 isort==5.13.2
