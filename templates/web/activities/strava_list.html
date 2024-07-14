@@ -26,7 +26,7 @@
                 <input type="hidden" name="duration" value="{{ activity.moving_time }}">
                 <input type="hidden" name="type" value="{{ activity.type }}">
                 <input type="hidden" name="shoes_id" value="{{ activity.shoes_id }}">
-                <input type="hidden" name="created" value="{{ activity.created|date:'Y-m-d H:m:s' }}">
+                <input type="hidden" name="created" value="{{ activity.created|date:'Y-m-d H:i:s' }}">
                 <button type="submit" class="btn btn--green">Add</button>
             </form>
         </div>
