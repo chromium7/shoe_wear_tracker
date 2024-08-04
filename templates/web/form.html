@@ -33,3 +33,70 @@
     </div>
 </form>
 {% endblock %}
+
+{% block js %}
+<script>
+    function convertHeicToJpg(file) {
+        return new Promise((resolve, reject) => {
+            if (file && file.name.toLowerCase().endsWith('.heic')) {
+                heic2any({
+                    blob: file,
+                    toType: 'image/jpeg',
+                    quality: 0.8
+                }).then(jpgBlob => {
+                    new Compressor(jpgBlob, {
+                        quality: 0.8,
+                        success(result) {
+                            const jpgFile = new File([result], file.name.replace(/\.heic$/i, '.jpg'), {
+                                type: 'image/jpeg',
+                                lastModified: new Date().getTime()
+                            });
+                            resolve(jpgFile);
+                        },
+                        error(err) {
+                            console.error('JPEG compression failed:', err);
+                            reject(err);
+                        }
+                    });
+                }).catch(error => {
+                    console.error('HEIC conversion failed:', error);
+                    reject(error);
+                });
+            } else {
+                resolve(file);
+            }
+        });
+    }
+
+    async function processFileInputs(form) {
+        const fileInputs = form.querySelectorAll('input[type="file"]');
+
+        for (const input of fileInputs) {
+            const files = Array.from(input.files);
+            const convertedFiles = await Promise.all(files.map(convertHeicToJpg));
+
+            // Create a new FileList-like object
+            const dataTransfer = new DataTransfer();
+            convertedFiles.forEach(file => dataTransfer.items.add(file));
+
+            // Replace the input's files with the new FileList
+            input.files = dataTransfer.files;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.querySelector('form');
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            try {
+                await processFileInputs(form);
+                form.submit(); // Submit the form normally after processing
+            } catch (error) {
+                console.error('Error during file conversion:', error);
+                // Handle error (e.g., show error message to user)
+            }
+        });
+    });
+</script>
+{% endblock %}
