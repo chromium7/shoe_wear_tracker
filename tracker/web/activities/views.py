@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from django.urls import reverse
 from django.utils import timezone
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
 
 from libraries.strava import get_athlete_activities
 from tracker.apps.photos.models import Photo
@@ -60,7 +61,7 @@ def details(request: TrackerHttpRequest, id: int) -> HttpResponse:
 
 @login_required
 def add_photo(request: TrackerHttpRequest, id: int) -> HttpResponse:
-    activity = get_object_or_404(request.user.activities.select_related('shoes'), id=id, user_id=request.user.id)
+    activity = get_object_or_404(request.user.activities.select_related('shoes'), id=id)
     photo_categories = activity.shoes.photo_categories.all()
 
     initials = [{'category': category.id} for category in photo_categories]
@@ -135,3 +136,13 @@ def strava_list(request: TrackerHttpRequest) -> HttpResponse:
         'selected_tab': 'strava_list',
     }
     return render(request, 'web/activities/strava_list.html', context)
+
+
+@require_POST
+@login_required
+def mark_no_photos(request: TrackerHttpRequest, id: int) -> HttpResponse:
+    activity = get_object_or_404(request.user.activities, id=id)
+    activity.no_photos = not (activity.no_photos)
+    activity.save(update_fields=['no_photos'])
+    messages.success(request, 'Activity has been updated')
+    return redirect('web:activities:details', activity.id)

@@ -28,7 +28,7 @@ class ActivityFilterForm(forms.Form):
         filter = self.cleaned_data['filter']
 
         if filter != self.Filter.ALL:
-            activity_qs = activity_qs.filter(photos=None)
+            activity_qs = activity_qs.filter(photos=None).exclude(no_photos=True)
 
         return activity_qs
 

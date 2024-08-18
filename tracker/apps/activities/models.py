@@ -26,6 +26,7 @@ class Activity(models.Model):
     shoe_distance = models.FloatField(blank=True, null=True, help_text="in meters")
     strava_id = models.CharField(blank=True)
     created = models.DateTimeField(default=timezone.now)
+    no_photos = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return self.name or f"Activity #{self.id}"
