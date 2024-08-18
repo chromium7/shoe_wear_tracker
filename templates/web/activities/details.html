@@ -34,6 +34,12 @@
             <th>Average Pace</th>
             <td>{{ activity.average_pace }}</td>
         </tr>
+        {% if activity.no_photos %}
+        <tr>
+            <th>No Photos</th>
+            <td>Yes</td>
+        </tr>
+        {% endif %}
     </table>
 </div>
 {% for category, photos in photo_by_categories.items %}
