@@ -75,7 +75,10 @@ class AddActivityForm(forms.Form):
         created = self.cleaned_data['created']
         distance = self.cleaned_data['distance']
         latest_activity = shoes.activities.order_by('-created').filter(created__lt=created).first()
-        current_distance_traveled = latest_activity.shoe_distance + distance
+        if latest_activity:
+            current_distance_traveled = latest_activity.shoe_distance + distance
+        else:
+            current_distance_traveled = 0
 
         activity = self.user.activities.create(
             strava_id=self.cleaned_data['id'],
