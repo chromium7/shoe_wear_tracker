@@ -38,10 +38,18 @@
             <div {% if message.tags %}class="{{ message.tags }}"{% endif %}>{{ message }}</div>
             {% endfor %}
         </div>
+        <div class="loading-modal hide">
+            <div class="loading-modal__container">
+                <div class="loading-modal__background">
+                    <div class="loader"></div>
+                </div>
+            </div>
+        </div>
         {% block content %}{% endblock %}
     </main>
 </body>
 <script src="{% static 'compressorjs/dist/compressor.min.js' %}"></script>
 <script src="{% static 'heic2any/dist/heic2any.min.js' %}"></script>
+<script src="{% static 'js/main.js' %}"></script>
 {% block js %}{% endblock %}
 </html>

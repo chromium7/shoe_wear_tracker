@@ -115,7 +115,7 @@ def strava_list(request: TrackerHttpRequest) -> HttpResponse:
         messages.success(request, f'Activity {activity.name} has been added')
         return redirect('web:activities:details', activity.id)
 
-    after = timezone.localtime() - timedelta(days=30)
+    after = timezone.localtime() - timedelta(days=21)
     registered_activity_ids = set(
         request.user.activities.filter(created__gte=after).values_list('strava_id', flat=True)
     )

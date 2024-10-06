@@ -152,6 +152,50 @@ form.full {
     }
 }
 
+.loading-modal {
+    display: block;
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+
+    &.hide {
+        display: none;
+    }
+
+    &__container {
+        border-radius: 8px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1001;
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+        width: fit-content;
+        height: fit-content;
+        overflow: hidden;
+    }
+}
+
+.loader {
+    border-radius: 50%;
+    border: 6px solid var(--text-secondary);
+    border-top: 6px solid var(--background);
+    width: 40px;
+    height: 40px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 .shoes {
     display: flex;
     flex-direction: column;
