@@ -1,7 +1,7 @@
 django==5.1.2
 django-extensions==3.2.3
 djangorestframework==3.15.2
-django-compressor==4.5
+django-compressor==4.5.1
 django-libsass==0.9
 django-storages==1.14.3
 django-thumbnails==0.7.0
