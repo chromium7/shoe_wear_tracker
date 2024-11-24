@@ -168,7 +168,7 @@ def get_gear_detail(shoes: 'Shoes') -> httpx.Response:
     return httpx.get(url=url, headers=headers, timeout=TIMEOUT)
 
 
-def get_athlete_activities(user: User, after: datetime) -> httpx.Response:
+def get_athlete_activities(user: User, after: datetime) -> list[StravaActivity]:
     response = get_activities(user, after)
     response.raise_for_status()
 

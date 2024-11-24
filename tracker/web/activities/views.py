@@ -1,5 +1,4 @@
 from collections import defaultdict
-from datetime import timedelta
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -7,11 +6,12 @@ from django.db.models import Prefetch
 from django.forms import formset_factory
 from django.http import HttpResponse
 from django.urls import reverse
-from django.utils import timezone
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
-from libraries.strava import get_athlete_activities
+from libraries.strava import STRAVA_SPORT_TYPES
+from tracker.apps.activities.models import Activity
+from tracker.apps.activities.utils import get_unregistered_strava_activities
 from tracker.apps.photos.models import Photo
 from tracker.core.utils import TrackerHttpRequest, Paginator
 
@@ -115,27 +115,37 @@ def strava_list(request: TrackerHttpRequest) -> HttpResponse:
         messages.success(request, f'Activity {activity.name} has been added')
         return redirect('web:activities:details', activity.id)
 
-    after = timezone.localtime() - timedelta(days=21)
-    registered_activity_ids = set(
-        request.user.activities.filter(created__gte=after).values_list('strava_id', flat=True)
-    )
-    active_shoes_mapping = {shoe.strava_id: shoe for shoe in request.user.shoes.filter(retired_at=None)}
-    # Get activities in the past 30 days
-    strava_activities = get_athlete_activities(request.user, after=after)
-
-    new_activities = []
-    for activity in strava_activities:
-        shoes = active_shoes_mapping.get(activity.shoes_id)
-        if str(activity.id) not in registered_activity_ids and shoes:
-            activity.shoes = shoes
-            new_activities.append(activity)
-
+    new_activities = get_unregistered_strava_activities(request.user)
     context = {
         'form': form,
         'new_activities': new_activities,
         'selected_tab': 'strava_list',
     }
     return render(request, 'web/activities/strava_list.html', context)
+
+
+@require_POST
+@login_required
+def bulk_add(request: TrackerHttpRequest) -> HttpResponse:
+    new_activities = get_unregistered_strava_activities(request.user)
+
+    created_activities = []
+    for strava_activity in new_activities:
+        created_activities.append(Activity(
+            user=request.user,
+            strava_id=strava_activity.id,
+            type=STRAVA_SPORT_TYPES.get(strava_activity.type),
+            shoes=strava_activity.shoes,
+            distance=strava_activity.distance,
+            duration=strava_activity.moving_time,
+            created=strava_activity.created,
+            # TODO: update shoe distance
+            shoe_distance=None,
+        ))
+
+    Activity.objects.bulk_create(created_activities)
+    messages.success(request, f'{len(created_activities)} new activities have been added')
+    return redirect('web:activities:index')
 
 
 @require_POST
