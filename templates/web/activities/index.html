@@ -12,7 +12,7 @@
         <div class="activities__item">
             <div class="activities__name">{{ activity.name }}</div>
             <div class="activities__details">
-                <div>{{ activity.get_type_display }}</div>
+                <div>{{ activity.get_type_display }} [{{ activity.shoes.name }}]</div>
                 <div>{{ activity.created }}</div>
                 <div>Distance: {{ activity.get_distance_display }}</div>
                 <div>Avg Pace: {{ activity.average_pace }}</div>

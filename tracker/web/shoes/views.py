@@ -122,7 +122,6 @@ def add_photo(request: TrackerHttpRequest, id: int) -> HttpResponse:
     if formset.is_valid():
         for form in formset.forms:
             if form.has_changed():
-                print('hehe')
                 form.save()
         return redirect('web:shoes:details', shoes.id)
 
