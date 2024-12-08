@@ -6,6 +6,7 @@ app_name = "shoes"
 
 urlpatterns = [
     path('', views.index, name="index"),
+    path('compare/', views.compare, name="compare"),
     path('list/', views.strava_list, name="strava_list"),
     path('<int:id>/', views.details, name="details"),
     path('<int:id>/update-distance/', views.update_distance, name="update_distance"),

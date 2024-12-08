@@ -12,7 +12,7 @@ from tracker.apps.photos.models import Photo
 from tracker.core.utils import TrackerHttpRequest, Paginator
 from tracker.web.activities.forms import ActivityPhotoForm
 
-from .forms import AddShoesForm, PhotoCategoryForm
+from .forms import AddShoesForm, PhotoCategoryForm, PhotoComparisonForm
 
 
 @login_required
@@ -167,3 +167,20 @@ def retire(request: TrackerHttpRequest, id: int) -> HttpResponse:
     shoes.retire()
     messages.success(request, f'Shoes {shoes.name} has been retired')
     return redirect('web:shoes:details', shoes.id)
+
+
+@login_required
+def compare(request: TrackerHttpRequest) -> HttpResponse:
+    form = PhotoComparisonForm(data=request.POST or None, user=request.user)
+    if form.is_valid():
+        photo1, photo2 = form.get_photos()
+    else:
+        photo1, photo2 = None, None
+
+    context = {
+        'form': form,
+        'selected_tab': 'compare',
+        'photo1': photo1,
+        'photo2': photo2,
+    }
+    return render(request, "web/shoes/compare.html", context)

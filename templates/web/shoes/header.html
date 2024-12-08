@@ -2,6 +2,7 @@
     <select name="action" id="action">
         <option value="{% url "web:shoes:index" %}" {% if selected_tab == 'index' %}selected{% endif %}>Action</option>
         <option value="{% url "web:shoes:strava_list" %}" {% if selected_tab == 'strava_list' %}selected{% endif %}>Add Shoes</option>
+        <option value="{% url "web:shoes:compare" %}" {% if selected_tab == 'compare' %}selected{% endif %}>Compare Shoes Photos</option>
     </select>
 </div>
 
@@ -9,7 +10,14 @@
     document.addEventListener('DOMContentLoaded', () => {
         const actionInput = document.querySelector('#action');
         actionInput.addEventListener('change', () => {
-            window.location.href = actionInput.value;
+            const value = actionInput.value;
+            if (value.startsWith('post')) {
+                const args = value.split('#');
+                const formId = args[1];
+                document.querySelector(`#${formId}`).submit();
+            } else {
+                window.location.href = value;
+            }
         })
     });
 </script>

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="center">
+    <h1>Shoe Wear Tracker</h1>
+</div>
+{% include "web/shoes/header.html" %}
+<form action="" method="post" class="full" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% comment %} Form {% endcomment %}
+    <label for="{{ form.shoes.id_for_label }}">
+        <div>{{ form.shoes.label }}</div>
+        {{ form.shoes }}
+        {{ form.shoes.errors }}
+    </label>
+    <label for="photo_category_select">
+        <div>{{ form.photo_category.label }}</div>
+        <select disabled name="photo_category_select" id="photo_category_select"></select>
+        {{ form.photo_category }}
+        {{ form.photo_category.errors }}
+    </label>
+    <label for="activity_1_select">
+        <div>{{ form.activity_1.label }}</div>
+        <select disabled name="activity_1_select" id="activity_1_select"></select>
+        {{ form.activity_1 }}
+        {{ form.activity_1.errors }}
+    </label>
+    <label for="activity_2_select">
+        <div>{{ form.activity_2.label }}</div>
+        <select disabled name="activity_2_select" id="activity_2_select"></select>
+        {{ form.activity_2 }}
+        {{ form.activity_2.errors }}
+    </label>
+    {{ form.non_field_errors }}
+
+    <div>
+        <button type="submit" class="btn btn--full">{{ button_name|default:"Save" }}</button>
+    </div>
+</form>
+{% endblock %}
+
+{% block js %}
+<script>
+    const shoesInput = document.querySelector('{{ form.shoes.id_for_label }}');
+    const photoCategoryInput = document.querySelector('{{ form.photo_category.id_for_label }}');
+    const activity1Input = document.querySelector('{{ form.activity_1.id_for_label }}');
+    const activityInput = document.querySelector('{{ form.activity_2.id_for_label }}');
+    const photoCategorySelect = document.querySelector('photo_category_select');
+    const activity1Select = document.querySelector('activity_1_select');
+    const activity2Select = document.querySelector('activity_2_select');
+</script>
+{% endblock %}
