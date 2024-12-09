@@ -7,7 +7,7 @@ django-storages==1.14.3
 django-thumbnails==0.7.0
 django-querystring-tag==1.0.3
 
-redis==5.0.7
+redis==5.2.1
 django-redis==5.4.0
 psycopg2-binary==2.9.9
 boto3==1.35.39
