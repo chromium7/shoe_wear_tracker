@@ -129,7 +129,12 @@ def strava_list(request: TrackerHttpRequest) -> HttpResponse:
 def bulk_add(request: TrackerHttpRequest) -> HttpResponse:
     new_activities = get_unregistered_strava_activities(request.user)
 
-    shoe_distance_mapping = {activity.shoes: activity.shoes.distance_covered for activity in new_activities}
+    # Make sure shoe distance is correct
+    shoes = {activity.shoes for activity in new_activities}
+    for shoe in shoes:
+        shoe.recalculate_distance_covered()
+
+    shoe_distance_mapping = {shoe: shoe.distance_covered for shoe in shoes}
     created_activities = []
     for strava_activity in new_activities:
         shoes = strava_activity.shoes
