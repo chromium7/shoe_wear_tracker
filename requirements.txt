@@ -10,7 +10,7 @@ django-querystring-tag==1.0.3
 redis==5.2.1
 django-redis==5.4.0
 psycopg2-binary==2.9.10
-boto3==1.35.98
+boto3==1.36.2
 
 Pillow==11.1.0
 httpx==0.27.2
