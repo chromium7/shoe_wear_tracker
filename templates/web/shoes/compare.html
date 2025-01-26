@@ -44,7 +44,7 @@
     const shoesInput = document.querySelector('#{{ form.shoes.id_for_label }}');
     const photoCategoryInput = document.querySelector('#{{ form.photo_category.id_for_label }}');
     const activity1Input = document.querySelector('#{{ form.activity_1.id_for_label }}');
-    const activityInput = document.querySelector('#{{ form.activity_2.id_for_label }}');
+    const activity2Input = document.querySelector('#{{ form.activity_2.id_for_label }}');
     const photoCategorySelect = document.querySelector('#photo_category_select');
     const activity1Select = document.querySelector('#activity_1_select');
     const activity2Select = document.querySelector('#activity_2_select');
@@ -76,6 +76,18 @@
         }
     }
 
+    function populateActivitySelect(select, activities) {
+        if (!select) return;
+        select.innerHTML = '<option value="">Select activity</option>';
+        select.removeAttribute('disabled');
+        activities.forEach(activity => {
+            const option = document.createElement('option');
+            option.value = activity;
+            option.textContent = DOMPurify.sanitize(activity);
+            select.appendChild(option);
+        });
+    }
+
     async function getPhotos() {
         const url = '{% url "api:shoes:photos" %}';
         try {
@@ -85,29 +97,15 @@
             if (data.status === 'ok') {
                 // Clear and populate activity selects
                 const activities = data.data.photos.map(photo => photo.name);
-
-                // Populate activity1 select
-                activity1Select.innerHTML = '<option value="">Select activity 1</option>';
-                activity1Select.removeAttribute('disabled');
-                activities.forEach(activity => {
-                    const option = document.createElement('option');
-                    option.value = activity;
-                    option.textContent = activity;
-                    activity1Select.appendChild(option);
-                });
-
-                // Populate activity2 select
-                activity2Select.innerHTML = '<option value="">Select activity 2</option>';
-                activity2Select.removeAttribute('disabled');
-                activities.forEach(activity => {
-                    const option = document.createElement('option');
-                    option.value = activity;
-                    option.textContent = activity;
-                    activity2Select.appendChild(option);
-                });
+                populateActivitySelect(activity1Select, activities);
+                populateActivitySelect(activity2Select, activities);
             }
         } catch (error) {
             console.error('Error fetching photos:', error);
+            alert('Failed to load photos. Please try again.');
+        } finally {
+            activity1Select.disabled = false;
+            activity2Select.disabled = false;
         }
     }
 
@@ -124,7 +122,7 @@
     });
 
     activity2Select.addEventListener('change', (e) => {
-        activityInput.value = e.target.value;
+        activity2Input.value = e.target.value;
     });
 
 </script>

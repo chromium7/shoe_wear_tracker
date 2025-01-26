@@ -37,5 +37,4 @@ def photos(request: TrackerHttpRequest) -> HttpResponse:
         data = {'photos': photo_data}
         return JsonResponse({'status': 'ok', 'data': data})
 
-    print(form.errors)
-    return JsonResponse({'status': 'error'})
+    return JsonResponse({'status': 'error'}, status=400)
