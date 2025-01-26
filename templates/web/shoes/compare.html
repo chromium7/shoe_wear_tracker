@@ -41,12 +41,89 @@
 
 {% block js %}
 <script>
-    const shoesInput = document.querySelector('{{ form.shoes.id_for_label }}');
-    const photoCategoryInput = document.querySelector('{{ form.photo_category.id_for_label }}');
-    const activity1Input = document.querySelector('{{ form.activity_1.id_for_label }}');
-    const activityInput = document.querySelector('{{ form.activity_2.id_for_label }}');
-    const photoCategorySelect = document.querySelector('photo_category_select');
-    const activity1Select = document.querySelector('activity_1_select');
-    const activity2Select = document.querySelector('activity_2_select');
+    const shoesInput = document.querySelector('#{{ form.shoes.id_for_label }}');
+    const photoCategoryInput = document.querySelector('#{{ form.photo_category.id_for_label }}');
+    const activity1Input = document.querySelector('#{{ form.activity_1.id_for_label }}');
+    const activity2Input = document.querySelector('#{{ form.activity_2.id_for_label }}');
+    const photoCategorySelect = document.querySelector('#photo_category_select');
+    const activity1Select = document.querySelector('#activity_1_select');
+    const activity2Select = document.querySelector('#activity_2_select');
+
+    async function getPhotoCategories() {
+        const url = '{% url "api:shoes:photo_categories" %}';
+        try {
+            const response = await fetch(`${url}?shoes=${shoesInput.value}`);
+            const data = await response.json();
+
+            if (data.status === 'ok') {
+                // Clear and populate photo category select
+                photoCategorySelect.innerHTML = '<option value="">Select a category</option>';
+                photoCategorySelect.removeAttribute('disabled');
+                data.data.categories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category.id;
+                    option.textContent = category.name;
+                    photoCategorySelect.appendChild(option);
+                });
+
+                // Update the hidden input with the first category
+                if (data.data.categories.length > 0) {
+                    photoCategoryInput.value = data.data.categories[0].name;
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching photo categories:', error);
+        }
+    }
+
+    function populateActivitySelect(select, activities) {
+        if (!select) return;
+        select.innerHTML = '<option value="">Select activity</option>';
+        select.removeAttribute('disabled');
+        activities.forEach(activity => {
+            const option = document.createElement('option');
+            option.value = activity;
+            option.textContent = DOMPurify.sanitize(activity);
+            select.appendChild(option);
+        });
+    }
+
+    async function getPhotos() {
+        const url = '{% url "api:shoes:photos" %}';
+        try {
+            const response = await fetch(`${url}?photo_category=${photoCategoryInput.value}`);
+            const data = await response.json();
+
+            if (data.status === 'ok') {
+                // Clear and populate activity selects
+                const activities = data.data.photos.map(photo => photo.name);
+                populateActivitySelect(activity1Select, activities);
+                populateActivitySelect(activity2Select, activities);
+            }
+        } catch (error) {
+            console.error('Error fetching photos:', error);
+            alert('Failed to load photos. Please try again.');
+        } finally {
+            activity1Select.disabled = false;
+            activity2Select.disabled = false;
+        }
+    }
+
+    // Event Listeners
+    shoesInput.addEventListener('change', getPhotoCategories);
+
+    photoCategorySelect.addEventListener('change', (e) => {
+        photoCategoryInput.value = e.target.value;
+        getPhotos();
+    });
+
+    activity1Select.addEventListener('change', (e) => {
+        activity1Input.value = e.target.value;
+    });
+
+    activity2Select.addEventListener('change', (e) => {
+        activity2Input.value = e.target.value;
+    });
+
 </script>
 {% endblock %}
