@@ -60,3 +60,6 @@ class StravaProfile(models.Model):
     access_token = models.CharField()
     refresh_token = models.CharField()
     expires_at = models.IntegerField()
+
+    def __str__(self) -> str:
+        return self.user.name
