@@ -9,6 +9,7 @@
 <div class="activities">
     {% if new_activities %}
     <form action="{% url "web:activities:bulk_add" %}" method="post">
+        {% csrf_token %}
         <button type="submit" class="btn btn--green">Add All Activities</button>
     </form>
     {% endif %}

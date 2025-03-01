@@ -144,6 +144,7 @@ def bulk_add(request: TrackerHttpRequest) -> HttpResponse:
             user=request.user,
             strava_id=strava_activity.id,
             type=STRAVA_SPORT_TYPES.get(strava_activity.type),
+            name=strava_activity.name,
             shoes=shoes,
             distance=distance,
             duration=strava_activity.moving_time,
