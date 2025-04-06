@@ -1,3 +1,6 @@
+"""
+https://developers.strava.com/docs/reference/
+"""
 from dataclasses import dataclass, fields
 from datetime import datetime
 from enum import Enum
